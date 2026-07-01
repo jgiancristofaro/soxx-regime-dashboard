@@ -1,0 +1,56 @@
+name: Update regime data & deploy
+
+on:
+  schedule:
+    # 22:30 UTC on weekdays = ~30 min after US market close (6:30pm ET / 5:30pm ET DST)
+    - cron: "30 22 * * 1-5"
+  workflow_dispatch:        # allow manual runs from the Actions tab
+  push:
+    branches: [ main ]      # redeploy on any code change
+
+permissions:
+  contents: write           # commit refreshed data.json
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refresh regime data
+        env:
+          # Set these as repo Secrets (Settings → Secrets and variables → Actions).
+          # Leave OPTIONS_PROVIDER as "none" to run price-only (signal still works).
+          OPTIONS_PROVIDER: ${{ vars.OPTIONS_PROVIDER || 'none' }}
+          ORATS_TOKEN: ${{ secrets.ORATS_TOKEN }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+        run: python scripts/update_data.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "regime-bot"
+          git config user.email "actions@github.com"
+          git add data/regime.json
+          git commit -m "chore: daily regime data refresh [skip ci]" || echo "no changes"
+          git push || echo "nothing to push"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
