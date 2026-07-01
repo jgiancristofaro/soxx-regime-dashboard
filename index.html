@@ -7,136 +7,238 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#0b0e14; --panel:#141a24; --panel2:#1b2430; --line:#263041;
-    --txt:#e6edf3; --muted:#8b98a9; --blue:#2f6bd8; --blue2:#5b8def;
-    --red:#e5484d; --redbg:rgba(229,72,77,.12); --green:#2ecc71; --greenbg:rgba(46,204,113,.12);
-    --orange:#e0a13a; --grid:rgba(255,255,255,.05);
+    --bg:#07080c;
+    --surface:#0d1017;
+    --surface2:#121720;
+    --border:#1c2333;
+    --border2:#242f42;
+    --txt:#eef0f4;
+    --txt2:#c9cfd8;
+    --muted:#606878;
+    --muted2:#8591a2;
+    --blue:#3b82f6;
+    --blue-dim:rgba(59,130,246,.15);
+    --red:#ef4444;
+    --red-dim:rgba(239,68,68,.12);
+    --red-glow:rgba(239,68,68,.06);
+    --green:#22c55e;
+    --green-dim:rgba(34,197,94,.12);
+    --green-glow:rgba(34,197,94,.06);
+    --amber:#f59e0b;
+    --grid:rgba(255,255,255,.04);
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.5;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
-  header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:22px}
-  h1{font-size:22px;margin:0;letter-spacing:.2px}
-  .sub{color:var(--muted);font-size:13px;margin-top:4px}
-  .ticker-pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;
-    padding:6px 14px;font-size:13px;color:var(--muted)}
-  /* signal banner */
-  .banner{border-radius:16px;padding:22px 26px;margin-bottom:22px;border:1px solid var(--line);
-    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
-  .banner.derisk{background:linear-gradient(135deg,var(--redbg),rgba(229,72,77,.03));border-color:rgba(229,72,77,.4)}
-  .banner.riskon{background:linear-gradient(135deg,var(--greenbg),rgba(46,204,113,.03));border-color:rgba(46,204,113,.4)}
-  .signal-state{font-size:44px;font-weight:800;letter-spacing:.5px;line-height:1}
-  .derisk .signal-state{color:var(--red)} .riskon .signal-state{color:var(--green)}
-  .signal-label{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
-  .signal-why{font-size:14px;color:var(--txt);max-width:560px}
-  .signal-why b{color:var(--red)}
-  .riskon .signal-why b{color:var(--green)}
-  .asof{text-align:right;font-size:13px;color:var(--muted)}
-  .asof .px{font-size:26px;font-weight:700;color:var(--txt);display:block}
-  /* tiles */
-  .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
-  .tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .tile .k{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
-  .tile .v{font-size:24px;font-weight:700;margin-top:6px}
-  .tile .n{font-size:11px;color:var(--muted);margin-top:2px}
-  .v.hot{color:var(--red)} .v.cool{color:var(--green)} .v.warn{color:var(--orange)}
-  /* panels */
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:22px}
-  .panel h2{font-size:15px;margin:0 0 4px;letter-spacing:.2px}
-  .panel .desc{color:var(--muted);font-size:13px;margin:0 0 16px}
-  .chart-box{position:relative;height:420px}
-  .chart-box.short{height:220px}
-  /* comparison table */
-  table{width:100%;border-collapse:collapse;font-size:13.5px}
-  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
-  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
-  td.metric{color:var(--muted)}
-  .col-bull{color:var(--green)} .col-chop{color:var(--red)}
+    font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+
+  /* ── page header ── */
+  .page-header{display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:28px;gap:16px;flex-wrap:wrap}
+  .page-title{font-size:13px;font-weight:600;color:var(--muted2);
+    letter-spacing:1.2px;text-transform:uppercase}
+  .meta-badge{display:flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted2)}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 6px var(--green);flex-shrink:0}
+  .stale-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0}
+
+  /* ── signal banner (split: left signal / right stats) ── */
+  .signal-bar{border-radius:14px;padding:24px 28px;margin-bottom:20px;
+    border:1px solid var(--border2);
+    display:flex;align-items:center;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;transition:background .3s}
+  .signal-bar.derisk{
+    background:linear-gradient(120deg,var(--red-dim) 0%,var(--red-glow) 60%,transparent 100%);
+    border-color:rgba(239,68,68,.25)}
+  .signal-bar.riskon{
+    background:linear-gradient(120deg,var(--green-dim) 0%,var(--green-glow) 60%,transparent 100%);
+    border-color:rgba(34,197,94,.25)}
+
+  .signal-left{}
+  .signal-eyebrow{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:6px}
+  .signal-word{font-size:42px;font-weight:800;letter-spacing:-.5px;line-height:1}
+  .derisk .signal-word{color:var(--red)}
+  .riskon .signal-word{color:var(--green)}
+  .signal-sub{font-size:13px;color:var(--txt2);margin-top:10px;max-width:520px;line-height:1.5}
+  .signal-sub b{font-weight:600}
+  .derisk .signal-sub b{color:var(--red)}
+  .riskon .signal-sub b{color:var(--green)}
+
+  .signal-right{display:flex;gap:24px;align-items:flex-start;flex-shrink:0}
+  .signal-stat{text-align:right}
+  .signal-stat .ss-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+  .signal-stat .ss-value{font-size:22px;font-weight:700;line-height:1.1;margin-top:3px}
+  .signal-stat .ss-note{font-size:11px;color:var(--muted);margin-top:2px}
+  .signal-divider{width:1px;background:var(--border2);align-self:stretch}
+
+  /* ── tiles row ── */
+  .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;transition:border-color .2s}
+  .tile:hover{border-color:var(--border2)}
+  .tile-label{font-size:10px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
+  .tile-value{font-size:22px;font-weight:700;margin-top:5px;letter-spacing:-.3px}
+  .tile-note{font-size:11px;color:var(--muted);margin-top:3px}
+  .hot{color:var(--red)} .cool{color:var(--green)} .warn{color:var(--amber)} .neutral{color:var(--txt)}
+
+  /* ── panels ── */
+  .panel{background:var(--surface);border:1px solid var(--border);
+    border-radius:14px;padding:22px 24px;margin-bottom:18px}
+  .panel-head{margin-bottom:16px}
+  .panel-title{font-size:14px;font-weight:600;color:var(--txt);letter-spacing:.1px}
+  .panel-desc{font-size:12.5px;color:var(--muted2);margin-top:4px;line-height:1.5}
+  .chart-box{position:relative;height:400px}
+  .chart-box.short{height:210px}
+  .chart-note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+  /* ── tables ── */
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--muted);font-weight:600;padding:10px 14px;
+    border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--txt2);vertical-align:middle}
   tr:last-child td{border-bottom:none}
-  .regime-tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px}
-  .regime-tag.on{background:var(--greenbg);color:var(--green)} .regime-tag.off{background:var(--redbg);color:var(--red)}
-  /* counterfactual cards */
-  .cf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  .cf{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--panel2)}
-  .cf .cf-name{font-size:13px;color:var(--muted)}
-  .cf .cf-ret{font-size:30px;font-weight:800;margin:6px 0}
-  .cf .cf-note{font-size:12px;color:var(--muted)}
-  .cf.best{border-color:rgba(46,204,113,.45)} .cf.best .cf-ret{color:var(--green)}
-  .cf.worst{border-color:rgba(229,72,77,.45)} .cf.worst .cf-ret{color:var(--red)}
-  .cf.hold .cf-ret{color:var(--blue2)}
-  /* framework */
-  .framework{background:var(--panel2);border-left:3px solid var(--blue);border-radius:8px;padding:16px 18px;font-size:14px;margin-top:6px}
-  .caveat{font-size:12.5px;color:var(--muted);margin-top:14px;padding-left:16px;border-left:2px solid var(--line)}
-  .legend-note{font-size:12px;color:var(--muted);margin-top:10px}
-  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
-  .stale{display:inline-block;font-size:11px;color:var(--orange);border:1px solid rgba(224,161,58,.4);
-    background:rgba(224,161,58,.1);border-radius:6px;padding:1px 7px;margin-left:6px}
-  @media(max-width:860px){.tiles{grid-template-columns:repeat(2,1fr)}.cf-grid{grid-template-columns:1fr}
-    .signal-state{font-size:34px}.chart-box{height:340px}}
+  tr:hover td{background:rgba(255,255,255,.015)}
+  td.col-label{color:var(--muted2);font-size:12.5px}
+  .col-bull{color:var(--green)} .col-bear{color:var(--red)}
+  .regime-badge{display:inline-flex;align-items:center;gap:5px;
+    padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.4px}
+  .regime-badge.on{background:var(--green-dim);color:var(--green)}
+  .regime-badge.off{background:var(--red-dim);color:var(--red)}
+
+  /* ── counterfactuals ── */
+  .cf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .cf-card{border:1px solid var(--border);border-radius:12px;padding:18px 20px;background:var(--surface2)}
+  .cf-name{font-size:12px;font-weight:600;color:var(--muted2);letter-spacing:.2px}
+  .cf-sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .cf-ret{font-size:36px;font-weight:800;margin:10px 0 4px;letter-spacing:-.5px;line-height:1}
+  .cf-meta{font-size:11px;color:var(--muted)}
+  .cf-card.best{border-color:rgba(34,197,94,.3)} .cf-card.best .cf-ret{color:var(--green)}
+  .cf-card.worst{border-color:rgba(239,68,68,.3)} .cf-card.worst .cf-ret{color:var(--red)}
+  .cf-card.hold .cf-ret{color:var(--blue)}
+
+  /* ── framework callout ── */
+  .callout{background:var(--surface2);border:1px solid var(--border);
+    border-left:3px solid var(--blue);border-radius:0 10px 10px 0;
+    padding:16px 20px;font-size:13.5px;color:var(--txt2);line-height:1.65;margin-bottom:14px}
+  .callout b{color:var(--txt);font-weight:600}
+  .caveat{font-size:12px;color:var(--muted2);line-height:1.6;
+    padding:12px 16px;border-left:2px solid var(--border2);
+    border-radius:0 6px 6px 0;background:rgba(255,255,255,.02)}
+
+  footer{font-size:11.5px;color:var(--muted);text-align:center;margin-top:28px;line-height:1.6}
+
+  /* ── section divider label ── */
+  .section-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;padding-left:2px}
+
+  @media(max-width:900px){
+    .tiles{grid-template-columns:repeat(3,1fr)}
+    .cf-grid{grid-template-columns:1fr 1fr}
+    .signal-right{display:none}
+    .signal-word{font-size:34px}
+    .chart-box{height:320px}
+  }
+  @media(max-width:600px){
+    .tiles{grid-template-columns:1fr 1fr}
+    .cf-grid{grid-template-columns:1fr}
+    .wrap{padding:20px 16px 60px}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>SOXX Regime Dashboard</h1>
-      <div class="sub">When to be risk-on and when to derisk — decided by the realized tape, not by what options fear.</div>
+
+  <div class="page-header">
+    <div class="page-title">SOXX · Regime Dashboard</div>
+    <div class="meta-badge" id="metaBadge">
+      <div class="stale-dot" id="liveDot"></div>
+      <span id="metaText">loading…</span>
     </div>
-    <div class="ticker-pill" id="metaPill">loading…</div>
-  </header>
+  </div>
 
-  <div id="banner" class="banner"></div>
+  <!-- Signal Banner -->
+  <div id="signalBar" class="signal-bar"></div>
 
+  <!-- Metric Tiles -->
   <div class="tiles" id="tiles"></div>
 
+  <!-- Main chart -->
   <div class="panel">
-    <h2>The discriminator: realized vol, not implied metrics</h2>
-    <p class="desc">Jan–May: calm tape under expensive options (stay long). June: the tape itself broke — realized vol crossed the 60% trigger for the first time all year.</p>
+    <div class="panel-head">
+      <div class="panel-title">Realized vol vs. implied vol — the discriminator</div>
+      <div class="panel-desc">Jan–May: calm tape under expensive options (stay long). June: realized vol crossed the 60% trigger for the first time all year.</div>
+    </div>
     <div class="chart-box"><canvas id="mainChart"></canvas></div>
-    <div class="legend-note">Left axis: SOXX price ($). Right axis: annualized volatility (%). Dotted line = 60% realized-vol derisk trigger. Shaded = derisk regime.</div>
+    <div class="chart-note">Left axis: SOXX price ($) &nbsp;·&nbsp; Right axis: annualized volatility (%) &nbsp;·&nbsp; Dotted line = 60% realized-vol derisk trigger &nbsp;·&nbsp; Shaded region = derisk regime</div>
   </div>
 
+  <!-- Comparison table -->
   <div class="panel">
-    <h2>What the tape <i>did</i> — the two regimes side by side</h2>
-    <p class="desc">The implied-side metrics (IV, put/call, skew) were elevated all year and don't discriminate February from now. The realized-side metrics do.</p>
-    <table id="cmpTable">
-      <thead><tr><th>Metric</th><th class="col-bull">Jan–May (bull)</th><th class="col-chop">June–now (chop)</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="panel-head">
+      <div class="panel-title">The two regimes side by side</div>
+      <div class="panel-desc">Implied metrics (IV, put/call, skew) were elevated all year — they don't discriminate February from now. The realized metrics do.</div>
+    </div>
+    <div class="table-wrap">
+      <table id="cmpTable">
+        <thead><tr><th>Metric</th><th class="col-bull">Jan–May · bull</th><th class="col-bear">June–now · chop</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 
+  <!-- Counterfactuals -->
   <div class="panel">
-    <h2>Counterfactual — adopting each rule on Feb 1, 2026</h2>
-    <p class="desc">The falsification test: does the signal discriminate, or is it a stopped clock that would have cost the run?</p>
+    <div class="panel-head">
+      <div class="panel-title">Counterfactual — each rule adopted Feb 1, 2026</div>
+      <div class="panel-desc">The falsification test: does the signal discriminate, or would it have cost the run?</div>
+    </div>
     <div class="cf-grid" id="cfGrid"></div>
     <div class="caveat" id="cfCaveat"></div>
   </div>
 
+  <!-- Sub chart -->
   <div class="panel">
-    <h2>Big-day frequency &amp; drawdown</h2>
-    <p class="desc">Share of the last 20 sessions moving ≥3% (right axis), and drawdown from the running peak (left axis). Big days went from ~1-in-5 to 2-in-3 in June.</p>
+    <div class="panel-head">
+      <div class="panel-title">Big-day frequency &amp; drawdown</div>
+      <div class="panel-desc">Sessions moving ≥3% (right axis) and drawdown from running peak (left axis). Big days went from ~1-in-5 to 2-in-3 in June.</div>
+    </div>
     <div class="chart-box short"><canvas id="subChart"></canvas></div>
   </div>
 
+  <!-- Month table -->
   <div class="panel">
-    <h2>Month-by-month regime</h2>
-    <table id="monthTable">
-      <thead><tr><th>Month</th><th>Regime</th><th>Realized vol range</th><th>Max drawdown</th><th>Big-day % (end)</th><th>Return</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="panel-head">
+      <div class="panel-title">Month-by-month regime</div>
+    </div>
+    <div class="table-wrap">
+      <table id="monthTable">
+        <thead><tr><th>Month</th><th>Regime</th><th>Realized vol range</th><th>Max drawdown</th><th>Big-day %</th><th>Return</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 
+  <!-- Framework -->
   <div class="panel">
-    <h2>The refined framework</h2>
-    <div class="framework">
-      Let the <b style="color:var(--orange)">implied metrics</b> (IV, put/call, skew, dispersion, gamma) <i>size your tail-risk expectations</i> —
-      but let the <b style="color:var(--blue2)">realized tape</b> (vol level, big-day frequency, drawdown depth, drift smoothness) <i>decide risk-on vs. derisk.</i>
-      By that standard, February said risk-on; today says derisk — and the realized trigger that justifies it fired for the first time in 2026 on <b>June 5</b>.
+    <div class="panel-head">
+      <div class="panel-title">The framework</div>
+    </div>
+    <div class="callout">
+      Let <b>implied metrics</b> (IV, put/call, skew, dispersion, gamma) <em>size your tail-risk expectations</em> —
+      but let the <b>realized tape</b> (vol level, big-day frequency, drawdown depth, drift smoothness) <em>decide risk-on vs. derisk.</em>
+      By that standard, February said risk-on; today says derisk — and the realized trigger fired for the first time in 2026 on <b>June 5</b>.
     </div>
     <div class="caveat">
-      Honesty caveats: the 60% threshold was chosen after seeing the data (in-sample) — trust the <i>dimension</i>, not the specific number. This is n=1 on the phase change. The rule is not clairvoyant: it stayed invested through March's −12% dip because March's realized vol never reached crisis levels, accepting moderate drawdowns as the price of staying in trends.
+      Honesty caveats: the 60% threshold was chosen after seeing the data (in-sample) — trust the <em>dimension</em>, not the exact number.
+      This is n=1 on the phase change. The rule accepted March's −12% dip as the price of staying in trends.
+      Not investment advice.
     </div>
   </div>
 
@@ -144,7 +246,8 @@
 </div>
 
 <script>
-const RED="#e5484d", GREEN="#2ecc71", BLUE="#5b8def", ORANGE="#e0a13a", MUTED="#8b98a9", GRID="rgba(255,255,255,.06)";
+const RED="#ef4444", GREEN="#22c55e", BLUE="#3b82f6", AMBER="#f59e0b";
+const MUTED="#606878", GRID="rgba(255,255,255,.05)";
 const fmtPct=v=>v==null?"–":(v>0?"+":"")+v.toFixed(1)+"%";
 const fmtVol=v=>v==null?"–":v.toFixed(0)+"%";
 
@@ -156,58 +259,76 @@ async function load(){
 
 function render(d){
   const s=d.signal, m=d.meta;
-  const stale = !m.options_live;
-  document.getElementById("metaPill").innerHTML =
-    `${m.ticker} · updated ${new Date(m.generated_at).toLocaleDateString()} `+
-    (stale?`<span class="stale">options: historical</span>`:`<span style="color:var(--green)">● options live</span>`);
+  const live=m.options_live;
+  const dot=document.getElementById("liveDot");
+  dot.className=live?"live-dot":"stale-dot";
+  document.getElementById("metaText").textContent=
+    `${m.ticker} · ${new Date(m.generated_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} · options: ${live?"live":"historical"}`;
 
-  // banner
-  const derisk = s.state==="DERISK";
-  const b=document.getElementById("banner");
-  b.className="banner "+(derisk?"derisk":"riskon");
-  b.innerHTML=`
-    <div>
-      <div class="signal-label">Current signal</div>
-      <div class="signal-state">${derisk?"◤ DERISK":"◢ RISK-ON"}</div>
-      <div class="signal-why" style="margin-top:12px">
-        20-day realized vol is <b>${fmtVol(s.rvol20)}</b>, `+
+  // signal banner
+  const derisk=s.state==="DERISK";
+  const bar=document.getElementById("signalBar");
+  bar.className="signal-bar "+(derisk?"derisk":"riskon");
+  bar.innerHTML=`
+    <div class="signal-left">
+      <div class="signal-eyebrow">Current signal</div>
+      <div class="signal-word">${derisk?"DERISK":"RISK-ON"}</div>
+      <div class="signal-sub">
+        20-day realized vol is <b>${fmtVol(s.rvol20)}</b> — `+
         (derisk
-          ? `above the 60% trigger. The trigger first fired on <b>${s.first_trigger_date}</b> at $${s.first_trigger_price} and has stayed on since. Realized vol now exceeds implied (${fmtVol(s.iv)}) — the chaos is outrunning the fear.`
+          ? `above the 60% trigger. First fired <b>${s.first_trigger_date}</b> at $${s.first_trigger_price} and has held since. Realized vol (${fmtVol(s.rvol20)}) now exceeds implied (${fmtVol(s.iv)}) — the chaos is outrunning the fear.`
           : `below the 60% trigger. The tape is orderly; stay long.`)+
       `</div>
     </div>
-    <div class="asof">
-      as of ${s.as_of}
-      <span class="px">$${s.soxx.toFixed(2)}</span>
-      SOXX close
+    <div class="signal-right">
+      <div class="signal-stat">
+        <div class="ss-label">SOXX Price</div>
+        <div class="ss-value">${s.soxx!=null?"$"+s.soxx.toFixed(2):"–"}</div>
+        <div class="ss-note">as of ${s.as_of}</div>
+      </div>
+      <div class="signal-divider"></div>
+      <div class="signal-stat">
+        <div class="ss-label">Drawdown</div>
+        <div class="ss-value" style="color:${s.drawdown<=-10?RED:AMBER}">${s.drawdown!=null?s.drawdown.toFixed(1)+"%":"–"}</div>
+        <div class="ss-note">from peak</div>
+      </div>
+      <div class="signal-divider"></div>
+      <div class="signal-stat">
+        <div class="ss-label">Impl. Vol</div>
+        <div class="ss-value">${fmtVol(s.iv)}</div>
+        <div class="ss-note">options-priced</div>
+      </div>
     </div>`;
 
   // tiles
   const tiles=[
-    {k:"Realized vol (20d)",v:fmtVol(s.rvol20),cls:s.rvol20>60?"hot":"cool",n:"trigger at 60%"},
-    {k:"Implied vol",v:fmtVol(s.iv),cls:"",n:"options-priced"},
-    {k:"Variance premium",v:(s.variance_premium>0?"+":"")+ (s.variance_premium==null?"–":s.variance_premium)+" pts",cls:s.variance_premium>0?"hot":"cool",n:"realized − implied"},
-    {k:"Big-day freq (20d)",v:s.bigday==null?"–":s.bigday.toFixed(0)+"%",cls:s.bigday>=50?"hot":s.bigday>=30?"warn":"cool",n:"sessions moving ≥3%"},
-    {k:"Drawdown",v:s.drawdown==null?"–":s.drawdown.toFixed(1)+"%",cls:s.drawdown<=-10?"hot":"warn",n:"from running peak"},
+    {label:"Realized vol (20d)",value:fmtVol(s.rvol20),cls:s.rvol20>60?"hot":"cool",note:"trigger at 60%"},
+    {label:"Implied vol",value:fmtVol(s.iv),cls:"neutral",note:"options-priced"},
+    {label:"Variance premium",value:(s.variance_premium>0?"+":"")+(s.variance_premium==null?"–":s.variance_premium)+" pts",cls:s.variance_premium>0?"hot":"cool",note:"realized − implied"},
+    {label:"Big-day freq (20d)",value:s.bigday==null?"–":s.bigday.toFixed(0)+"%",cls:s.bigday>=50?"hot":s.bigday>=30?"warn":"cool",note:"sessions ≥3% move"},
+    {label:"Drawdown",value:s.drawdown==null?"–":s.drawdown.toFixed(1)+"%",cls:s.drawdown<=-10?"hot":"warn",note:"from running peak"},
   ];
-  document.getElementById("tiles").innerHTML=tiles.map(t=>
-    `<div class="tile"><div class="k">${t.k}</div><div class="v ${t.cls}">${t.v}</div><div class="n">${t.n}</div></div>`).join("");
+  document.getElementById("tiles").innerHTML=tiles.map(t=>`
+    <div class="tile">
+      <div class="tile-label">${t.label}</div>
+      <div class="tile-value ${t.cls}">${t.value}</div>
+      <div class="tile-note">${t.note}</div>
+    </div>`).join("");
 
-  // comparison table (derived from series split at June 1)
+  // comparison table
   const jm=d.series.filter(r=>r.date<"2026-06-01"), jn=d.series.filter(r=>r.date>="2026-06-01");
   const avg=(a,f)=>{const x=a.map(f).filter(v=>v!=null);return x.length?x.reduce((p,c)=>p+c,0)/x.length:null;};
   const maxV=(a,f)=>{const x=a.map(f).filter(v=>v!=null);return x.length?Math.max(...x):null;};
   const minV=(a,f)=>{const x=a.map(f).filter(v=>v!=null);return x.length?Math.min(...x):null;};
   const rows=[
-    ["Realized vol (20d)", `${fmtVol(minV(jm,r=>r.rvol20))}–${fmtVol(maxV(jm,r=>r.rvol20))}, never above 51%`, `crossed 60% Jun 5, now ${fmtVol(s.rvol20)}`],
-    ["Big-day freq (≥3%)", "15–25% of sessions", `${s.bigday==null?"–":s.bigday.toFixed(0)+"%"} of last 20`],
-    ["Max drawdown", `${minV(jm,r=>r.dd)==null?"–":minV(jm,r=>r.dd).toFixed(0)+"%"} (Mar the exception)`, `${minV(jn,r=>r.dd)==null?"–":minV(jn,r=>r.dd).toFixed(0)+"%"}`],
-    ["Daily autocorrelation", "~0 (smooth drift)", `${avg(jn,r=>r.autocorr20)==null?"–":avg(jn,r=>r.autocorr20).toFixed(2)} (whipsaw)`],
-    ["Realized vs implied", "realized below implied", "realized exceeded implied"],
+    ["Realized vol (20d)",`${fmtVol(minV(jm,r=>r.rvol20))}–${fmtVol(maxV(jm,r=>r.rvol20))}, never above 51%`,`crossed 60% Jun 5, now ${fmtVol(s.rvol20)}`],
+    ["Big-day freq (≥3%)","15–25% of sessions",`${s.bigday==null?"–":s.bigday.toFixed(0)+"%"} of last 20`],
+    ["Max drawdown",`${minV(jm,r=>r.dd)==null?"–":minV(jm,r=>r.dd).toFixed(0)+"%"} (Mar dip)`,`${minV(jn,r=>r.dd)==null?"–":minV(jn,r=>r.dd).toFixed(0)+"%"}`],
+    ["Daily autocorrelation","~0  (smooth drift)",`${avg(jn,r=>r.autocorr20)==null?"–":avg(jn,r=>r.autocorr20).toFixed(2)}  (whipsaw)`],
+    ["Realized vs. implied","realized below implied","realized exceeded implied"],
   ];
   document.querySelector("#cmpTable tbody").innerHTML=rows.map(r=>
-    `<td class="metric">${r[0]}</td>`).map((c,i)=>
-    `<tr><td class="metric">${rows[i][0]}</td><td class="col-bull">${rows[i][1]}</td><td class="col-chop">${rows[i][2]}</td></tr>`).join("");
+    `<tr><td class="col-label">${r[0]}</td><td class="col-bull">${r[1]}</td><td class="col-bear">${r[2]}</td></tr>`).join("");
 
   // counterfactuals
   const cf=d.counterfactuals;
@@ -216,111 +337,151 @@ function render(d){
     {name:"Buy &amp; hold",sub:"no rule, fully invested",ret:cf.hold,days:0,cls:"hold"},
     {name:"Realized-vol rule",sub:"go flat when RVol20 > 60%",ret:cf.rv_rule,days:cf.rv_flat_days,cls:"best"},
   ];
-  document.getElementById("cfGrid").innerHTML=cards.map(c=>
-    `<div class="cf ${c.cls}">
-       <div class="cf-name">${c.name}</div>
-       <div class="cf-ret">${fmtPct(c.ret)}</div>
-       <div class="cf-note">${c.sub}${c.days?` · ${c.days} flat days`:""}</div>
-     </div>`).join("");
-  document.getElementById("cfCaveat").innerHTML =
-    `The IV rule sat out ${cf.iv_flat_days} days including chunks of May's rally — it would have cost two-thirds of the run. The realized-vol rule stayed fully invested the entire Jan–May bull and fired for the first time on June 5 at $${s.first_trigger_price}. The ${cf.hold&&cf.rv_rule?(cf.hold-cf.rv_rule).toFixed(0):"~14"}-point gap vs. buy-and-hold is the genuine cost of insurance in a whipsaw — it captured the overwhelming bulk of the bull and is flat now.`;
+  document.getElementById("cfGrid").innerHTML=cards.map(c=>`
+    <div class="cf-card ${c.cls}">
+      <div class="cf-name">${c.name}</div>
+      <div class="cf-sub">${c.sub}</div>
+      <div class="cf-ret">${fmtPct(c.ret)}</div>
+      <div class="cf-meta">${c.days?`${c.days} flat days`:"fully invested"}</div>
+    </div>`).join("");
+  document.getElementById("cfCaveat").textContent=
+    `The IV rule sat out ${cf.iv_flat_days} days including chunks of May's rally — it would have cost two-thirds of the run. The realized-vol rule stayed fully invested Jan–May and fired for the first time on June 5 at $${s.first_trigger_price}. The ${cf.hold&&cf.rv_rule?(cf.hold-cf.rv_rule).toFixed(0):"~14"}-point gap vs. buy-and-hold is the genuine cost of insurance in a whipsaw.`;
 
   // month table
-  document.querySelector("#monthTable tbody").innerHTML=d.months.map(mo=>
-    `<tr>
+  document.querySelector("#monthTable tbody").innerHTML=d.months.map(mo=>`
+    <tr>
       <td>${mo.month}</td>
-      <td><span class="regime-tag ${mo.regime==="DERISK"?"off":"on"}">${mo.regime}</span></td>
+      <td><span class="regime-badge ${mo.regime==="DERISK"?"off":"on"}">${mo.regime}</span></td>
       <td>${mo.rvol_min==null?"–":mo.rvol_min+"–"+mo.rvol_max+"%"}</td>
-      <td>${mo.max_dd.toFixed(1)}%</td>
+      <td style="color:${mo.max_dd<=-10?RED:AMBER}">${mo.max_dd.toFixed(1)}%</td>
       <td>${mo.bigday_end==null?"–":mo.bigday_end+"%"}</td>
-      <td style="color:${mo.ret>=0?GREEN:RED}">${fmtPct(mo.ret)}</td>
+      <td style="color:${mo.ret>=0?GREEN:RED};font-weight:600">${fmtPct(mo.ret)}</td>
     </tr>`).join("");
 
-  drawMain(d); drawSub(d);
-  document.getElementById("footer").innerHTML =
-    `Signal = 20-day annualized realized volatility vs. a 60% threshold. Price data auto-updates daily (Stooq). `+
-    `Options metrics ${stale?"shown from the historical record":"live from your options feed"}. Not investment advice.`;
+  drawMain(d);
+  drawSub(d);
+  document.getElementById("footer").textContent=
+    `Signal = 20-day annualized realized volatility vs. a 60% threshold. Price data auto-refreshes daily via Stooq. `+
+    `Options metrics ${live?"live from your options feed":"shown from historical record"}. Not investment advice.`;
 }
 
-function shadeDerisk(chart){ /* plugin drawn below */ }
-
+// derisk shade plugin
 const deriskShade={
   id:"deriskShade",
-  beforeDatasetsDraw(chart,args,opts){
-    const {ctx,chartArea:{top,bottom},scales:{x}}=chart;
+  beforeDatasetsDraw(chart,_args,opts){
+    const{ctx,chartArea:{top,bottom},scales:{x}}=chart;
     const pts=opts.points||[];
-    ctx.save(); ctx.fillStyle="rgba(229,72,77,.09)";
+    ctx.save();ctx.fillStyle="rgba(239,68,68,.08)";
     let start=null;
     pts.forEach((off,i)=>{
-      if(off&&start===null) start=i;
+      if(off&&start===null)start=i;
       if((!off||i===pts.length-1)&&start!==null){
-        const x0=x.getPixelForValue(start), x1=x.getPixelForValue(off&&i===pts.length-1?i:i-1);
-        ctx.fillRect(x0,top,Math.max(x1-x0,1),bottom-top); start=null;
+        const x0=x.getPixelForValue(start),x1=x.getPixelForValue(off&&i===pts.length-1?i:i-1);
+        ctx.fillRect(x0,top,Math.max(x1-x0,1),bottom-top);start=null;
       }
     });
     ctx.restore();
   }
 };
 
-function drawMain(d){
-  const labels=d.series.map(r=>r.date);
-  const off=d.series.map(r=>r.risk_off);
-  const ctx=document.getElementById("mainChart");
-  new Chart(ctx,{
-    type:"line",
-    data:{labels,datasets:[
-      {label:"SOXX ($)",data:d.series.map(r=>r.soxx),yAxisID:"y",borderColor:BLUE,backgroundColor:BLUE,borderWidth:2,pointRadius:0,tension:.15},
-      {label:"Realized vol 20d (%)",data:d.series.map(r=>r.rvol20),yAxisID:"y1",borderColor:RED,borderWidth:2,pointRadius:0,tension:.15},
-      {label:"Implied vol (%)",data:d.series.map(r=>r.iv),yAxisID:"y1",borderColor:ORANGE,borderWidth:1.5,borderDash:[5,4],pointRadius:0,tension:.15},
-    ]},
-    options:{
-      responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
-      plugins:{
-        legend:{labels:{color:MUTED,usePointStyle:true,boxWidth:8}},
-        deriskShade:{points:off},
-        tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y==null?"–":c.parsed.y.toFixed(c.datasetIndex===0?2:1)}`}},
-        annotation:false
-      },
-      scales:{
-        x:{ticks:{color:MUTED,maxTicksLimit:12,autoSkip:true},grid:{color:GRID}},
-        y:{position:"left",title:{display:true,text:"SOXX ($)",color:BLUE},ticks:{color:MUTED},grid:{color:GRID}},
-        y1:{position:"right",title:{display:true,text:"Volatility (%)",color:RED},ticks:{color:MUTED},grid:{drawOnChartArea:false},
-            suggestedMin:0,suggestedMax:100}
-      }
-    },
-    plugins:[deriskShade, thresholdLine(60)]
-  });
-}
-
 function thresholdLine(val){
-  return {id:"thresh"+val,afterDraw(chart){
-    const y=chart.scales.y1; if(!y) return;
-    const yp=y.getPixelForValue(val); const {ctx,chartArea:{left,right}}=chart;
-    ctx.save();ctx.strokeStyle="rgba(229,72,77,.5)";ctx.setLineDash([3,4]);ctx.lineWidth=1;
+  return{id:"thresh"+val,afterDraw(chart){
+    const y=chart.scales.y1;if(!y)return;
+    const yp=y.getPixelForValue(val);
+    const{ctx,chartArea:{left,right}}=chart;
+    ctx.save();
+    ctx.strokeStyle="rgba(239,68,68,.4)";
+    ctx.setLineDash([4,5]);ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
-    ctx.fillStyle="rgba(229,72,77,.8)";ctx.font="10px sans-serif";ctx.setLineDash([]);
-    ctx.fillText("60% derisk trigger",left+6,yp-4);ctx.restore();
+    ctx.fillStyle="rgba(239,68,68,.6)";
+    ctx.font="10px -apple-system,sans-serif";
+    ctx.setLineDash([]);
+    ctx.fillText("60% derisk trigger",left+8,yp-5);
+    ctx.restore();
   }};
 }
 
-function drawSub(d){
-  const labels=d.series.map(r=>r.date);
-  new Chart(document.getElementById("subChart"),{
-    data:{labels,datasets:[
-      {type:"line",label:"Drawdown (%)",data:d.series.map(r=>r.dd),yAxisID:"y",borderColor:RED,backgroundColor:"rgba(229,72,77,.12)",fill:true,borderWidth:1.5,pointRadius:0,tension:.15},
-      {type:"line",label:"Big-day freq (%)",data:d.series.map(r=>r.bigday),yAxisID:"y1",borderColor:ORANGE,borderWidth:2,pointRadius:0,tension:.15},
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
-      plugins:{legend:{labels:{color:MUTED,usePointStyle:true,boxWidth:8}}},
+function drawMain(d){
+  new Chart(document.getElementById("mainChart"),{
+    type:"line",
+    data:{
+      labels:d.series.map(r=>r.date),
+      datasets:[
+        {label:"SOXX ($)",data:d.series.map(r=>r.soxx),yAxisID:"y",
+          borderColor:BLUE,backgroundColor:"rgba(59,130,246,.08)",
+          borderWidth:2,pointRadius:0,tension:.2,fill:false},
+        {label:"Realized vol 20d (%)",data:d.series.map(r=>r.rvol20),yAxisID:"y1",
+          borderColor:RED,borderWidth:2,pointRadius:0,tension:.2},
+        {label:"Implied vol (%)",data:d.series.map(r=>r.iv),yAxisID:"y1",
+          borderColor:AMBER,borderWidth:1.5,borderDash:[5,4],pointRadius:0,tension:.2},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:"index",intersect:false},
+      plugins:{
+        legend:{labels:{color:MUTED,usePointStyle:true,pointStyle:"line",boxWidth:16,font:{size:12}}},
+        deriskShade:{points:d.series.map(r=>r.risk_off)},
+        tooltip:{
+          backgroundColor:"rgba(13,16,23,.95)",
+          borderColor:"rgba(255,255,255,.1)",
+          borderWidth:1,
+          titleColor:"#c9cfd8",
+          bodyColor:MUTED,
+          padding:10,
+          callbacks:{label:c=>`  ${c.dataset.label}: ${c.parsed.y==null?"–":c.parsed.y.toFixed(c.datasetIndex===0?2:1)}`}
+        }
+      },
       scales:{
-        x:{ticks:{color:MUTED,maxTicksLimit:12,autoSkip:true},grid:{color:GRID}},
-        y:{position:"left",title:{display:true,text:"Drawdown %",color:RED},ticks:{color:MUTED},grid:{color:GRID},suggestedMax:0},
-        y1:{position:"right",title:{display:true,text:"Big-day %",color:ORANGE},ticks:{color:MUTED},grid:{drawOnChartArea:false},suggestedMin:0,suggestedMax:100}
-      }}
+        x:{ticks:{color:MUTED,maxTicksLimit:10,autoSkip:true,font:{size:11}},grid:{color:GRID},border:{color:"transparent"}},
+        y:{position:"left",title:{display:true,text:"SOXX ($)",color:BLUE,font:{size:11}},
+          ticks:{color:MUTED,font:{size:11}},grid:{color:GRID},border:{color:"transparent"}},
+        y1:{position:"right",title:{display:true,text:"Volatility (%)",color:RED,font:{size:11}},
+          ticks:{color:MUTED,font:{size:11}},grid:{drawOnChartArea:false},
+          suggestedMin:0,suggestedMax:100,border:{color:"transparent"}}
+      }
+    },
+    plugins:[deriskShade,thresholdLine(60)]
   });
 }
 
-load().catch(e=>{document.getElementById("banner").innerHTML="Failed to load data.json — "+e;});
+function drawSub(d){
+  new Chart(document.getElementById("subChart"),{
+    data:{
+      labels:d.series.map(r=>r.date),
+      datasets:[
+        {type:"line",label:"Drawdown (%)",data:d.series.map(r=>r.dd),yAxisID:"y",
+          borderColor:RED,backgroundColor:"rgba(239,68,68,.1)",
+          fill:true,borderWidth:1.5,pointRadius:0,tension:.2},
+        {type:"line",label:"Big-day freq (%)",data:d.series.map(r=>r.bigday),yAxisID:"y1",
+          borderColor:AMBER,borderWidth:2,pointRadius:0,tension:.2},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:"index",intersect:false},
+      plugins:{
+        legend:{labels:{color:MUTED,usePointStyle:true,pointStyle:"line",boxWidth:16,font:{size:12}}},
+        tooltip:{
+          backgroundColor:"rgba(13,16,23,.95)",borderColor:"rgba(255,255,255,.1)",borderWidth:1,
+          titleColor:"#c9cfd8",bodyColor:MUTED,padding:10,
+        }
+      },
+      scales:{
+        x:{ticks:{color:MUTED,maxTicksLimit:10,autoSkip:true,font:{size:11}},grid:{color:GRID},border:{color:"transparent"}},
+        y:{position:"left",title:{display:true,text:"Drawdown %",color:RED,font:{size:11}},
+          ticks:{color:MUTED,font:{size:11}},grid:{color:GRID},suggestedMax:0,border:{color:"transparent"}},
+        y1:{position:"right",title:{display:true,text:"Big-day %",color:AMBER,font:{size:11}},
+          ticks:{color:MUTED,font:{size:11}},grid:{drawOnChartArea:false},
+          suggestedMin:0,suggestedMax:100,border:{color:"transparent"}}
+      }
+    }
+  });
+}
+
+load().catch(e=>{
+  document.getElementById("signalBar").textContent="Failed to load data — "+e;
+});
 </script>
 </body>
 </html>
