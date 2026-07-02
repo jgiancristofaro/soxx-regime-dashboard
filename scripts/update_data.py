@@ -3,15 +3,21 @@
 SOXX Regime Dashboard — daily data updater.
 
 Two data layers:
-  1. PRICE LAYER (always free, no key): SOXX daily closes from Stooq.
+  1. PRICE LAYER (always free, no key): SOXX daily closes from Yahoo/Stooq.
      Drives the realized-vol regime trigger — the risk-on / derisk decision.
   2. OPTIONS LAYER (optional, paid feed): implied vol, put/call OI, skew.
      Enriches context only. Enabled when an API token env var is present.
 
-The script MERGES fresh data onto the existing data/regime.json so the full
-2026 history (including seed options fields) is preserved. If the options
-feed is unavailable, the last known options values are carried forward and
-flagged stale — the price-based signal keeps updating regardless.
+Additional auto-fetched (free):
+  - Basket: SOXL, DRAM, RAM, EWY, KORU, MU — YTD + Jun 1 returns via Yahoo
+  - Macro: ^MOVE (bond vol), ^TNX (10Y yield) via Yahoo
+  - VIXEQ from CBOE public CSV
+  - MU 20-day realized vol (confirmer for DRAM health)
+
+Static / manually-updated (in data/catalysts.json):
+  - Catalyst calendar with outcome fields
+  - Dealer gamma, P/C OI percentile, HMM stress prob, constituent correlation
+  - DDR4 spot price, TSMC cumulative revenue
 
 Run: python scripts/update_data.py
 Env:
@@ -28,12 +34,14 @@ TICKER = "SOXX"
 THRESHOLD = 60.0          # 20d annualized realized vol (%) that flips to DERISK
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(HERE, "..", "data", "regime.json")
+CATALYST_PATH = os.path.join(HERE, "..", "data", "catalysts.json")
 
+BASKET_TICKERS = ["SOXL", "DRAM", "RAM", "EWY", "KORU", "MU"]
 
 # --------------------------------------------------------------------------
 # 1. PRICE LAYER — free, no API key
 # --------------------------------------------------------------------------
-def fetch_prices_yahoo(ticker=TICKER):
+def fetch_prices_yahoo(ticker):
     """Daily closes from Yahoo Finance chart API (free, no key)."""
     url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
            f"?range=2y&interval=1d")
@@ -42,8 +50,8 @@ def fetch_prices_yahoo(ticker=TICKER):
     res = data["chart"]["result"][0]
     ts = res["timestamp"]
     closes = res["indicators"]["quote"][0]["close"]
-    df = pd.DataFrame({"date": pd.to_datetime(ts, unit="s").normalize(), "soxx": closes})
-    df = df.dropna(subset=["soxx"]).drop_duplicates("date")
+    df = pd.DataFrame({"date": pd.to_datetime(ts, unit="s").normalize(), "close": closes})
+    df = df.dropna(subset=["close"]).drop_duplicates("date")
     return df.sort_values("date").reset_index(drop=True)
 
 
@@ -55,21 +63,23 @@ def fetch_prices_stooq(ticker=TICKER):
         raise RuntimeError(f"Stooq returned no data for {ticker}: {raw[:120]}")
     px = pd.read_csv(io.StringIO(raw))
     px["date"] = pd.to_datetime(px["Date"])
-    return px[["date", "Close"]].rename(columns={"Close": "soxx"}).sort_values("date").reset_index(drop=True)
+    return px[["date", "Close"]].rename(columns={"Close": "close"}).sort_values("date").reset_index(drop=True)
 
 
-def fetch_prices(ticker=TICKER):
+def fetch_soxx_prices():
     """Try Yahoo first, fall back to Stooq."""
     try:
-        return fetch_prices_yahoo(ticker)
+        return fetch_prices_yahoo(TICKER)
     except Exception as e:
         print(f"[warn] Yahoo price feed failed ({e}); trying Stooq", file=sys.stderr)
-        return fetch_prices_stooq(ticker)
+        df = fetch_prices_stooq(TICKER)
+        return df
 
 
 def compute_regime(df):
-    """Add realized-regime metrics to a DataFrame that has date, soxx."""
+    """Add realized-regime metrics to a DataFrame that has date, close."""
     df = df.sort_values("date").reset_index(drop=True)
+    df = df.rename(columns={"close": "soxx"})
     df["ret"] = df["soxx"].pct_change()
     df["rvol20"] = df["ret"].rolling(20).std() * np.sqrt(252) * 100
     df["bigday"] = (df["ret"].abs() >= 0.03).rolling(20).mean() * 100
@@ -84,7 +94,6 @@ def compute_regime(df):
 # 2. OPTIONS LAYER — optional paid feed
 # --------------------------------------------------------------------------
 def fetch_options_orats():
-    """ORATS Data API summaries. Returns dict of the latest options metrics."""
     token = os.environ.get("ORATS_TOKEN")
     if not token:
         return None
@@ -94,7 +103,6 @@ def fetch_options_orats():
     if not rows:
         return None
     r = rows[0]
-    # ORATS field names; guard each in case the plan omits some.
     iv = r.get("iv30d") or r.get("pxAtmIv") or r.get("orIvXmon")
     c_oi, p_oi = r.get("cOi"), r.get("pOi")
     pcoi = (p_oi / c_oi) if (c_oi and p_oi) else None
@@ -103,7 +111,6 @@ def fetch_options_orats():
 
 
 def fetch_options_polygon():
-    """Polygon.io options snapshot. Aggregates ATM IV and put/call OI."""
     key = os.environ.get("POLYGON_API_KEY")
     if not key:
         return None
@@ -141,6 +148,136 @@ def fetch_options():
     return None
 
 
+# --------------------------------------------------------------------------
+# 3. BASKET + MACRO (free, Yahoo Finance)
+# --------------------------------------------------------------------------
+def _ret_pct(price_now, price_ref):
+    if price_ref and price_now:
+        return round((price_now / price_ref - 1) * 100, 1)
+    return None
+
+
+def fetch_basket():
+    """Fetch basket tickers from Yahoo; compute YTD and Jun-1 returns."""
+    results = []
+    ytd_ref_date = pd.Timestamp("2026-01-02")
+    jun1_ref_date = pd.Timestamp("2026-06-01")
+
+    for ticker in BASKET_TICKERS:
+        try:
+            df = fetch_prices_yahoo(ticker)
+            df = df[df["date"] >= pd.Timestamp("2026-01-01")].reset_index(drop=True)
+            if len(df) == 0:
+                continue
+            last = df.iloc[-1]
+            price = _num(last["close"])
+
+            # YTD reference: first trading day on or after Jan 2
+            ytd_row = df[df["date"] >= ytd_ref_date]
+            ytd_price = _num(ytd_row.iloc[0]["close"]) if len(ytd_row) else None
+            ytd_date = ytd_row.iloc[0]["date"].strftime("%Y-%m-%d") if len(ytd_row) else None
+
+            # Jun 1 reference: last close on or before Jun 1
+            jun1_row = df[df["date"] <= jun1_ref_date]
+            jun1_price = _num(jun1_row.iloc[-1]["close"]) if len(jun1_row) else None
+            jun1_date = jun1_row.iloc[-1]["date"].strftime("%Y-%m-%d") if len(jun1_row) else None
+
+            # ATH in 2026
+            ath_idx = df["close"].idxmax()
+            ath_price = _num(df.loc[ath_idx, "close"])
+            ath_date = df.loc[ath_idx, "date"].strftime("%Y-%m-%d")
+            ath_dd = _ret_pct(price, ath_price)
+
+            results.append({
+                "ticker": ticker,
+                "price": price,
+                "as_of": last["date"].strftime("%Y-%m-%d"),
+                "ytd_ret": _ret_pct(price, ytd_price),
+                "ytd_start": ytd_price,
+                "ytd_start_date": ytd_date,
+                "jun1_ret": _ret_pct(price, jun1_price),
+                "jun1_start": jun1_price,
+                "jun1_start_date": jun1_date,
+                "ath": ath_price,
+                "ath_date": ath_date,
+                "ath_dd": ath_dd,
+            })
+        except Exception as e:
+            print(f"[warn] basket fetch failed for {ticker}: {e}", file=sys.stderr)
+
+    return results
+
+
+def fetch_macro():
+    """Fetch ^MOVE, ^TNX via Yahoo."""
+    result = {}
+    for ticker, key in [("^MOVE", "move"), ("^TNX", "tnx")]:
+        try:
+            df = fetch_prices_yahoo(ticker)
+            if len(df):
+                result[key] = _num(df.iloc[-1]["close"])
+                result[key + "_date"] = df.iloc[-1]["date"].strftime("%Y-%m-%d")
+        except Exception as e:
+            print(f"[warn] macro fetch failed for {ticker}: {e}", file=sys.stderr)
+    return result
+
+
+def fetch_vixeq():
+    """Fetch VIXEQ from CBOE public CSV."""
+    try:
+        url = "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIXEQ_History.csv"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Referer": "https://www.cboe.com/us/indices/dispersion/"
+        }
+        raw = urlopen(Request(url, headers=headers), timeout=30).read().decode()
+        df = pd.read_csv(io.StringIO(raw))
+        df.columns = df.columns.str.strip()
+        date_col = next(c for c in df.columns if "date" in c.lower())
+        close_col = next(c for c in df.columns if "close" in c.lower())
+        df[date_col] = pd.to_datetime(df[date_col])
+        df = df.sort_values(date_col)
+        last = df.iloc[-1]
+        return {
+            "vixeq": _num(last[close_col]),
+            "vixeq_date": last[date_col].strftime("%Y-%m-%d")
+        }
+    except Exception as e:
+        print(f"[warn] VIXEQ fetch failed: {e}", file=sys.stderr)
+        return {}
+
+
+def fetch_mu_rvol():
+    """Fetch MU prices and compute 20-day realized vol."""
+    try:
+        df = fetch_prices_yahoo("MU")
+        df = df[df["date"] >= pd.Timestamp("2026-01-01")].reset_index(drop=True)
+        df["ret"] = df["close"].pct_change()
+        df["rvol20"] = df["ret"].rolling(20).std() * np.sqrt(252) * 100
+        last = df.iloc[-1]
+        return {
+            "mu_rvol20": round(float(last["rvol20"]), 1) if pd.notna(last["rvol20"]) else None,
+            "mu_price": _num(last["close"]),
+            "mu_date": last["date"].strftime("%Y-%m-%d"),
+        }
+    except Exception as e:
+        print(f"[warn] MU vol fetch failed: {e}", file=sys.stderr)
+        return {}
+
+
+def load_catalysts():
+    """Load catalyst calendar and static gauges from data/catalysts.json."""
+    try:
+        with open(CATALYST_PATH) as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[warn] catalysts.json load failed: {e}", file=sys.stderr)
+        return {"events": [], "static_gauges": {}}
+
+
+# --------------------------------------------------------------------------
+# 4. MERGE, DERIVE, WRITE
+# --------------------------------------------------------------------------
 def _num(v):
     try:
         return None if v is None else round(float(v), 4)
@@ -148,9 +285,6 @@ def _num(v):
         return None
 
 
-# --------------------------------------------------------------------------
-# 3. MERGE, DERIVE, WRITE
-# --------------------------------------------------------------------------
 def cum(rets):
     return float((np.prod(1 + np.asarray(rets)) - 1) * 100)
 
@@ -161,7 +295,6 @@ def load_existing():
 
 
 def build_series(price_df, existing_series, latest_options):
-    """Merge price metrics with existing per-day options fields; append today's."""
     prev = {row["date"]: row for row in existing_series}
     out = []
     for _, r in price_df.iterrows():
@@ -175,8 +308,6 @@ def build_series(price_df, existing_series, latest_options):
             "bigday": _num(r["bigday"]),
             "dd": _num(r["dd"]),
             "autocorr20": _num(r["autocorr20"]),
-            # options fields: keep historical seed values; only the newest row
-            # gets a fresh options reading if the feed provided one.
             "iv": old.get("iv"),
             "pcoi": old.get("pcoi"),
             "skew": old.get("skew"),
@@ -186,7 +317,6 @@ def build_series(price_df, existing_series, latest_options):
                               if (row["rvol20"] is not None and row["iv"] is not None) else None)
         row["risk_off"] = bool(r["rvol20"] > THRESHOLD) if pd.notna(r["rvol20"]) else False
         out.append(row)
-    # apply fresh options reading to the last row
     if latest_options and out:
         last = out[-1]
         for k in ("iv", "pcoi", "skew"):
@@ -197,7 +327,7 @@ def build_series(price_df, existing_series, latest_options):
     return out
 
 
-def build_payload(series, options_live):
+def build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data):
     df = pd.DataFrame(series)
     df["date"] = pd.to_datetime(df["date"])
     df["mon"] = df["date"].dt.strftime("%Y-%m")
@@ -219,7 +349,6 @@ def build_payload(series, options_live):
             "regime": "DERISK" if (g["rvol20"] > THRESHOLD).any() else "RISK-ON",
         })
 
-    # Counterfactuals from Feb 1 (needs iv_pct history; skip if absent)
     feb = df[df["date"] >= pd.Timestamp("2026-02-01")].copy()
     cf = {}
     if len(feb):
@@ -241,6 +370,14 @@ def build_payload(series, options_live):
             else:
                 clean_row[k] = v
         clean_series.append(clean_row)
+
+    # Build live gauges: merge static (from catalysts.json) with auto-fetched
+    static_gauges = catalysts_data.get("static_gauges", {})
+    gauges = {
+        **static_gauges,
+        **mu_data,
+        **macro_data_merge(macro, vixeq_data),
+    }
 
     return {
         "meta": {
@@ -265,27 +402,44 @@ def build_payload(series, options_live):
         },
         "counterfactuals": cf,
         "months": months,
+        "basket": basket,
+        "gauges": gauges,
+        "catalysts": catalysts_data.get("events", []),
         "series": clean_series,
     }
+
+
+def macro_data_merge(macro, vixeq_data):
+    return {**macro, **vixeq_data}
 
 
 def main():
     existing = load_existing()
     try:
-        px = fetch_prices()
+        # Core SOXX price + regime metrics
+        px = fetch_soxx_prices()
         px = compute_regime(px)
-        # keep only 2026+ to match the analysis window
         px = px[px["date"] >= pd.Timestamp("2026-01-01")].reset_index(drop=True)
         options_live = fetch_options()
-        series = build_series(px, existing["series"], options_live)
-        payload = build_payload(series, options_live)
+        series = build_series(px, existing.get("series", []), options_live)
+
+        # Basket + macro + catalyst data
+        basket = fetch_basket()
+        macro = fetch_macro()
+        vixeq_data = fetch_vixeq()
+        mu_data = fetch_mu_rvol()
+        catalysts_data = load_catalysts()
+
+        payload = build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data)
+
         with open(DATA_PATH, "w") as f:
             json.dump(payload, f, indent=2)
         print(f"[ok] updated {DATA_PATH}: {len(series)} rows, "
               f"signal={payload['signal']['state']} rvol={payload['signal']['rvol20']} "
-              f"options_live={bool(options_live)}")
+              f"basket={len(basket)} tickers options_live={bool(options_live)}")
     except Exception as e:
-        print(f"[error] update failed, leaving existing data.json unchanged: {e}", file=sys.stderr)
+        print(f"[error] update failed, leaving existing data unchanged: {e}", file=sys.stderr)
+        import traceback; traceback.print_exc(file=sys.stderr)
         sys.exit(1)
 
 

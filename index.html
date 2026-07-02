@@ -78,6 +78,76 @@
 
   /* ── tiles row ── */
   .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
+
+  /* ── basket returns ── */
+  .basket-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .basket-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+  .basket-ticker{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted2)}
+  .basket-price{font-size:20px;font-weight:700;margin-top:5px;letter-spacing:-.2px}
+  .basket-rets{display:flex;gap:10px;margin-top:6px}
+  .basket-ret{font-size:11px}
+  .basket-ret .ret-label{color:var(--muted);font-size:10px;display:block}
+  .basket-ret .ret-val{font-weight:600}
+
+  /* ── all-clear checklist + gauges ── */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  .checklist{list-style:none}
+  .checklist li{display:flex;align-items:flex-start;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--border)}
+  .checklist li:last-child{border-bottom:none}
+  .check-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
+  .check-icon.yes{background:var(--green-dim);color:var(--green)}
+  .check-icon.no{background:var(--red-dim);color:var(--red)}
+  .check-icon.warn{background:rgba(245,158,11,.15);color:var(--amber)}
+  .check-label{font-size:13px;color:var(--txt2);flex:1}
+  .check-current{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* gauge rows */
+  .gauge-row{display:flex;justify-content:space-between;align-items:center;
+    padding:9px 0;border-bottom:1px solid var(--border)}
+  .gauge-row:last-child{border-bottom:none}
+  .gauge-name{font-size:12px;color:var(--muted2)}
+  .gauge-val{font-size:13px;font-weight:600}
+  .gauge-note{font-size:10px;color:var(--muted);margin-top:1px;text-align:right}
+
+  /* ── catalyst timeline ── */
+  .catalyst-tier{margin-bottom:20px}
+  .tier-header{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .catalyst-list{display:flex;flex-direction:column;gap:6px}
+  .cat-row{display:grid;grid-template-columns:90px 1fr auto;gap:14px;align-items:start;
+    background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+    padding:12px 16px;transition:border-color .2s}
+  .cat-row:hover{border-color:var(--border2)}
+  .cat-row.outcome-bull{border-left:3px solid var(--green)}
+  .cat-row.outcome-bear{border-left:3px solid var(--red)}
+  .cat-row.outcome-neutral{border-left:3px solid var(--amber)}
+  .cat-row.upcoming{border-left:3px solid var(--blue)}
+  .cat-date{font-size:11px;color:var(--muted2);font-weight:600;padding-top:2px}
+  .cat-countdown{font-size:10px;color:var(--muted);margin-top:2px}
+  .cat-body{}
+  .cat-event{font-size:13px;font-weight:600;color:var(--txt)}
+  .cat-ticker{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.6px;
+    background:var(--blue-dim);color:var(--blue);border-radius:5px;
+    padding:1px 7px;margin-left:6px;vertical-align:middle}
+  .cat-watch{font-size:11.5px;color:var(--muted2);margin-top:4px;line-height:1.5}
+  .cat-signals{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+  .cat-signal{font-size:10.5px;padding:2px 8px;border-radius:5px}
+  .cat-signal.bull{background:var(--green-dim);color:var(--green)}
+  .cat-signal.bear{background:var(--red-dim);color:var(--red)}
+  .outcome-badge{flex-shrink:0;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;
+    letter-spacing:.4px;align-self:center;white-space:nowrap}
+  .outcome-badge.bull{background:var(--green-dim);color:var(--green)}
+  .outcome-badge.bear{background:var(--red-dim);color:var(--red)}
+  .outcome-badge.neutral{background:rgba(245,158,11,.15);color:var(--amber)}
+  .outcome-badge.pending{background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+  .outcome-badge.upcoming{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+  .next-catalyst{background:var(--blue-dim);border:1px solid rgba(59,130,246,.2);
+    border-radius:10px;padding:12px 16px;margin-bottom:16px;
+    display:flex;align-items:center;gap:12px}
+  .next-cat-label{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue)}
+  .next-cat-text{font-size:13px;font-weight:600;color:var(--txt)}
   .tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;
     padding:14px 16px;transition:border-color .2s}
   .tile:hover{border-color:var(--border2)}
@@ -138,16 +208,23 @@
   .section-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
     color:var(--muted);margin-bottom:10px;padding-left:2px}
 
+  @media(max-width:1050px){
+    .basket-grid{grid-template-columns:repeat(3,1fr)}
+    .two-col{grid-template-columns:1fr}
+  }
   @media(max-width:900px){
     .tiles{grid-template-columns:repeat(3,1fr)}
     .cf-grid{grid-template-columns:1fr 1fr}
     .signal-right{display:none}
     .signal-word{font-size:34px}
     .chart-box{height:320px}
+    .cat-row{grid-template-columns:1fr auto;gap:10px}
+    .cat-date{display:none}
   }
   @media(max-width:600px){
     .tiles{grid-template-columns:1fr 1fr}
     .cf-grid{grid-template-columns:1fr}
+    .basket-grid{grid-template-columns:1fr 1fr}
     .wrap{padding:20px 16px 60px}
   }
 </style>
@@ -168,6 +245,33 @@
 
   <!-- Metric Tiles -->
   <div class="tiles" id="tiles"></div>
+
+  <!-- Basket Returns -->
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head">
+      <div class="panel-title">Basket tracker</div>
+      <div class="panel-desc">YTD and since Jun 1 (regime-change date). Leverage drag is real: SOXX +4.8% vs SOXL −4.4% Jun 1→now.</div>
+    </div>
+    <div class="basket-grid" id="basketGrid"></div>
+  </div>
+
+  <!-- All-clear checklist + Supporting gauges -->
+  <div class="two-col" style="margin-bottom:18px">
+    <div class="panel" style="margin-bottom:0">
+      <div class="panel-head">
+        <div class="panel-title">All-clear conditions</div>
+        <div class="panel-desc">Both required simultaneously to signal regime normalization.</div>
+      </div>
+      <ul class="checklist" id="checklist"></ul>
+    </div>
+    <div class="panel" style="margin-bottom:0">
+      <div class="panel-head">
+        <div class="panel-title">Supporting regime gauges</div>
+        <div class="panel-desc">Context metrics — size tail-risk expectations, don't flip the signal.</div>
+      </div>
+      <div id="gaugeRows"></div>
+    </div>
+  </div>
 
   <!-- Main chart -->
   <div class="panel">
@@ -225,6 +329,16 @@
     </div>
   </div>
 
+  <!-- Catalyst Timeline -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Catalyst calendar — Jul–Sep 2026</div>
+      <div class="panel-desc">Tier 1 = direct SOXX thesis drivers · Tier 2 = equipment bookings (12–18mo lead) · Tier 3 = memory market data · Tier 4 = macro rate catalysts</div>
+    </div>
+    <div id="nextCatalyst"></div>
+    <div id="catalystList"></div>
+  </div>
+
   <!-- Framework -->
   <div class="panel">
     <div class="panel-head">
@@ -250,6 +364,20 @@ const RED="#ef4444", GREEN="#22c55e", BLUE="#3b82f6", AMBER="#f59e0b";
 const MUTED="#606878", GRID="rgba(255,255,255,.05)";
 const fmtPct=v=>v==null?"–":(v>0?"+":"")+v.toFixed(1)+"%";
 const fmtVol=v=>v==null?"–":v.toFixed(0)+"%";
+
+// Days between today and a YYYY-MM-DD date string
+function daysUntil(dateStr){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const t=new Date(dateStr+"T00:00:00");
+  return Math.round((t-today)/(1000*60*60*24));
+}
+
+function fmtCountdown(days){
+  if(days<0) return `${Math.abs(days)}d ago`;
+  if(days===0) return "today";
+  if(days===1) return "tomorrow";
+  return `in ${days}d`;
+}
 
 async function load(){
   const res=await fetch("data/regime.json?t="+Date.now());
@@ -358,11 +486,222 @@ function render(d){
       <td style="color:${mo.ret>=0?GREEN:RED};font-weight:600">${fmtPct(mo.ret)}</td>
     </tr>`).join("");
 
+  // basket
+  renderBasket(d.basket||[]);
+
+  // all-clear checklist
+  renderChecklist(s, d.gauges||{});
+
+  // catalyst timeline
+  renderCatalysts(d.catalysts||[]);
+
   drawMain(d);
   drawSub(d);
-  document.getElementById("footer").textContent=
-    `Signal = 20-day annualized realized volatility vs. a 60% threshold. Price data auto-refreshes daily via Stooq. `+
-    `Options metrics ${live?"live from your options feed":"shown from historical record"}. Not investment advice.`;
+
+  // footer with next catalyst + DDR4 spot
+  const g=d.gauges||{};
+  const nextEv=(d.catalysts||[]).filter(c=>!c.outcome&&daysUntil(c.date)>=0)
+    .sort((a,b)=>a.date.localeCompare(b.date))[0];
+  const footerParts=[
+    `Signal = 20-day annualized realized volatility vs. 60% threshold. Price data auto-refreshes daily.`,
+    g.ddr4_1gx8_spot?`DDR4 1Gx8 spot: $${g.ddr4_1gx8_spot} (${g.ddr4_spot_date||""})`:null,
+    nextEv?`Next catalyst: ${nextEv.event} ${nextEv.ticker?"("+nextEv.ticker+") ":""}— ${fmtCountdown(daysUntil(nextEv.date))}`:null,
+    `Options: ${live?"live":"historical"}. Not investment advice.`,
+  ].filter(Boolean);
+  document.getElementById("footer").textContent=footerParts.join("  ·  ");
+}
+
+// ── Basket ──────────────────────────────────────────────────────────────────
+function renderBasket(basket){
+  const el=document.getElementById("basketGrid");
+  if(!basket.length){el.innerHTML="<p style='color:var(--muted);font-size:12px'>No basket data yet — run update_data.py to populate.</p>";return;}
+  el.innerHTML=basket.map(b=>{
+    const ytdColor=b.ytd_ret>=0?GREEN:RED;
+    const jun1Color=b.jun1_ret==null?"var(--muted)":b.jun1_ret>=0?GREEN:RED;
+    return `<div class="basket-card">
+      <div class="basket-ticker">${b.ticker}</div>
+      <div class="basket-price" style="color:var(--txt)">$${b.price!=null?b.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):"–"}</div>
+      <div class="basket-rets">
+        <div class="basket-ret">
+          <span class="ret-label">YTD</span>
+          <span class="ret-val" style="color:${ytdColor}">${fmtPct(b.ytd_ret)}</span>
+        </div>
+        <div class="basket-ret">
+          <span class="ret-label">Jun 1→</span>
+          <span class="ret-val" style="color:${jun1Color}">${fmtPct(b.jun1_ret)}</span>
+        </div>
+        ${b.ath_dd!=null?`<div class="basket-ret">
+          <span class="ret-label">ATH dd</span>
+          <span class="ret-val" style="color:${b.ath_dd<=-20?RED:AMBER}">${fmtPct(b.ath_dd)}</span>
+        </div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+// ── All-clear checklist ──────────────────────────────────────────────────────
+function renderChecklist(s, g){
+  // variance_premium in regime.json = RV − IV (positive means RV > IV = bad/derisk)
+  // all-clear = variance_premium < 0 (IV > RV, normal state)
+  const vpPositive = s.variance_premium!=null && s.variance_premium < 0;
+  const rvolBelow51 = s.rvol20!=null && s.rvol20 < 51;
+  const moveBelow97 = g.move!=null ? g.move < 97 : null;
+  const pcCapitulation = g.soxx_pcoi!=null ? g.soxx_pcoi >= 3.0 : null;
+  const hmCalm = g.hm_stress_prob!=null ? g.hm_stress_prob < 0.5 : null;
+
+  const items=[
+    {
+      pass: rvolBelow51,
+      label:"RVol20 below 51%",
+      current:`currently ${s.rvol20!=null?s.rvol20.toFixed(0)+"%":"–"} — threshold: 51%`,
+      required:true,
+    },
+    {
+      pass: vpPositive,
+      label:"Variance premium positive (IV > RV)",
+      current:`currently ${s.variance_premium!=null?(s.variance_premium>0?"−":"+")+(Math.abs(s.variance_premium))+" pts":"–"} — need IV > RV`,
+      required:true,
+    },
+    {
+      pass: moveBelow97,
+      label:"MOVE bond vol below 97 (median)",
+      current:`currently ${g.move!=null?g.move:"–"} — escalation zone: >110`,
+      required:false,
+    },
+    {
+      pass: pcCapitulation,
+      label:"P/C OI capitulation (≥3.0)",
+      current:`currently ${g.soxx_pcoi!=null?g.soxx_pcoi.toFixed(2):"–"} (${g.soxx_pcoi_pctile!=null?g.soxx_pcoi_pctile+"th pctile":"–"}) — need ≥3.0`,
+      required:false,
+    },
+    {
+      pass: hmCalm,
+      label:"HMM stress probability <50%",
+      current:`currently ${g.hm_stress_prob!=null?(g.hm_stress_prob*100).toFixed(0)+"%":"–"} — at maximum`,
+      required:false,
+    },
+  ];
+
+  const allClearMet = rvolBelow51 && vpPositive;
+  document.getElementById("checklist").innerHTML=items.map(item=>{
+    const icon = item.pass===null ? "?" : item.pass ? "✓" : "✗";
+    const cls = item.pass===null ? "warn" : item.pass ? "yes" : "no";
+    const reqLabel = item.required ? `<span style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blue);margin-left:6px">required</span>` : "";
+    return `<li>
+      <div class="check-icon ${cls}">${icon}</div>
+      <div>
+        <div class="check-label">${item.label}${reqLabel}</div>
+        <div class="check-current">${item.current}</div>
+      </div>
+    </li>`;
+  }).join("")+
+  `<li style="border:none;padding-top:14px">
+    <div style="font-size:12px;color:${allClearMet?GREEN:"var(--muted2)"}">
+      ${allClearMet
+        ? "✓ All-clear conditions met — monitor for sustained confirmation"
+        : "✗ All-clear NOT met — both required conditions must be satisfied simultaneously"}
+    </div>
+  </li>`;
+
+  // render supporting gauges panel alongside
+  renderGauges(g);
+}
+
+// ── Gauges ───────────────────────────────────────────────────────────────────
+function renderGauges(g){
+  const rows=[
+    {name:"MU RVol20", val:g.mu_rvol20!=null?g.mu_rvol20+"%":"–", note:"threshold ~109%", color:g.mu_rvol20>109?RED:GREEN},
+    {name:"MOVE bond vol", val:g.move!=null?g.move:"–", note:"below 97 median ✓", color:g.move>110?RED:g.move>97?AMBER:GREEN},
+    {name:"10Y Treasury", val:g.tnx!=null?g.tnx+"%":"–", note:"danger zone: >4.7-4.8%", color:g.tnx>4.7?RED:AMBER},
+    {name:"VIXEQ−VIX spread", val:g.vixeq!=null?("~"+g.vixeq):"~30 (hist.)", note:"sector vol vs market vol", color:RED},
+    {name:"SOXX dealer gamma", val:g.soxx_dealer_gamma!=null?"$"+g.soxx_dealer_gamma+"M/1%":"–", note:"negative = vol-amplifying", color:g.soxx_dealer_gamma<0?RED:GREEN},
+    {name:"SOXX P/C OI", val:g.soxx_pcoi!=null?g.soxx_pcoi.toFixed(2):"–", note:g.soxx_pcoi_pctile!=null?g.soxx_pcoi_pctile+"th pctile — cap. at 3.0+":"–", color:g.soxx_pcoi>=3?GREEN:MUTED},
+    {name:"Constituent corr", val:g.constituent_corr!=null?g.constituent_corr.toFixed(2):"–", note:g.constituent_corr_pctile!=null?g.constituent_corr_pctile+"th pctile — diversif. broken":"–", color:g.constituent_corr>0.7?RED:AMBER},
+    {name:"HMM P(stress)", val:g.hm_stress_prob!=null?(g.hm_stress_prob*100).toFixed(0)+"%":"–", note:"1.0 = maximum stress", color:g.hm_stress_prob>=1?RED:g.hm_stress_prob>0.5?AMBER:GREEN},
+  ];
+  document.getElementById("gaugeRows").innerHTML=rows.map(r=>`
+    <div class="gauge-row">
+      <div>
+        <div class="gauge-name">${r.name}</div>
+        <div class="gauge-note">${r.note}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="gauge-val" style="color:${r.color}">${r.val}</div>
+      </div>
+    </div>`).join("");
+}
+
+// ── Catalyst Timeline ────────────────────────────────────────────────────────
+function renderCatalysts(events){
+  const tiers={
+    1:"Tier 1 — Direct SOXX thesis drivers (earnings)",
+    2:"Tier 2 — Equipment bookings (12–18 month lead indicator)",
+    3:"Tier 3 — Memory market data",
+    4:"Tier 4 — Macro rate catalysts",
+  };
+  const sorted=[...events].sort((a,b)=>a.date.localeCompare(b.date));
+
+  // Next pending event
+  const pending=sorted.filter(e=>!e.outcome&&daysUntil(e.date)>=0);
+  const next=pending[0];
+  const nextEl=document.getElementById("nextCatalyst");
+  if(next){
+    const d=daysUntil(next.date);
+    nextEl.innerHTML=`<div class="next-catalyst">
+      <div>
+        <div class="next-cat-label">Next catalyst</div>
+        <div class="next-cat-text">${next.event}${next.ticker?` · ${next.ticker}`:""} — <b style="color:${d<=7?AMBER:BLUE}">${fmtCountdown(d)}</b> (${next.date})</div>
+      </div>
+    </div>`;
+  } else {
+    nextEl.innerHTML="";
+  }
+
+  // Group by tier
+  const byTier={};
+  sorted.forEach(e=>{
+    if(!byTier[e.tier]) byTier[e.tier]=[]; byTier[e.tier].push(e);
+  });
+
+  document.getElementById("catalystList").innerHTML=
+    [1,2,3,4].filter(t=>byTier[t]).map(t=>{
+      const evHtml=byTier[t].map(e=>{
+        const days=daysUntil(e.date);
+        const isPast=days<0;
+        let rowCls="cat-row";
+        let badgeHtml="";
+        if(e.outcome==="bull"){rowCls+=" outcome-bull";badgeHtml=`<span class="outcome-badge bull">BULL ✓</span>`;}
+        else if(e.outcome==="bear"){rowCls+=" outcome-bear";badgeHtml=`<span class="outcome-badge bear">BEAR ✗</span>`;}
+        else if(e.outcome==="neutral"){rowCls+=" outcome-neutral";badgeHtml=`<span class="outcome-badge neutral">NEUTRAL</span>`;}
+        else if(!isPast&&days<=14){rowCls+=" upcoming";badgeHtml=`<span class="outcome-badge upcoming">${fmtCountdown(days).toUpperCase()}</span>`;}
+        else if(isPast){badgeHtml=`<span class="outcome-badge pending">PASSED</span>`;}
+        else{badgeHtml=`<span class="outcome-badge pending">${fmtCountdown(days)}</span>`;}
+
+        const noteHtml=e.outcome&&e.outcome_note
+          ?`<div style="font-size:11px;color:var(--muted2);margin-top:4px;font-style:italic">${e.outcome_note}</div>`:"";
+
+        return `<div class="${rowCls}">
+          <div>
+            <div class="cat-date">${e.date}</div>
+            <div class="cat-countdown" style="color:${days<=7&&!e.outcome?AMBER:MUTED}">${fmtCountdown(days)}</div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-event">${e.event}${e.ticker?`<span class="cat-ticker">${e.ticker}</span>`:""}</div>
+            <div class="cat-watch">${e.watch}</div>
+            <div class="cat-signals">
+              <span class="cat-signal bull">▲ ${e.bull}</span>
+              <span class="cat-signal bear">▼ ${e.bear}</span>
+            </div>
+            ${noteHtml}
+          </div>
+          ${badgeHtml}
+        </div>`;
+      }).join("");
+      return `<div class="catalyst-tier">
+        <div class="tier-header">${tiers[t]||"Tier "+t}</div>
+        <div class="catalyst-list">${evHtml}</div>
+      </div>`;
+    }).join("");
 }
 
 // derisk shade plugin
