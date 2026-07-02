@@ -12,12 +12,33 @@ A static, single-page dashboard that produces a **risk-on / derisk signal** for 
 ```
 index.html                   # the entire dashboard UI (static, reads data/regime.json at runtime)
 data/regime.json             # all data the page renders — auto-refreshed daily by CI
-scripts/update_data.py       # fetches prices (Stooq) + optional options data, writes regime.json
+data/catalysts.json          # MANUALLY maintained: catalyst events + static gauge values
+scripts/update_data.py       # fetches prices (Yahoo/Stooq) + macro data, writes regime.json
 requirements.txt             # Python deps for the update script
 .github/workflows/update.yml # GitHub Actions: runs update_data.py daily + deploys to Pages
 ```
 
 No build step. No npm. No framework. `index.html` is served directly as a static file.
+
+## Data architecture (as of July 2026)
+
+`regime.json` has five top-level sections, all consumed by `render()` in `index.html`:
+
+| Section | Source | Refresh |
+|---|---|---|
+| `signal` | `update_data.py` (SOXX closes from Stooq) | Daily CI cron |
+| `history` | `update_data.py` | Daily CI cron |
+| `basket` | `update_data.py` (Yahoo Finance: SOXL, DRAM, RAM, EWY, KORU, MU) | Daily CI cron |
+| `gauges` | Merged: `update_data.py` (MU RVol, MOVE, TNX, VIXEQ) + `static_gauges` from `catalysts.json` | Daily CI + manual |
+| `catalysts` | `update_data.py` reads `data/catalysts.json` directly | Manual only |
+
+### Manually maintained data (`data/catalysts.json`)
+
+Edit this file to:
+- **Update event outcomes** — set `"outcome": "bull"`, `"bear"`, or `"neutral"`, and fill `outcome_date` + `outcome_note` as events resolve
+- **Update static gauges** — update `static_gauges` fields (SOXX/EWY dealer gamma, P/C OI, HMM stress, constituent correlation, DDR4 spot price, TSMC cumulative revenue) whenever you have fresh data from Barchart, TrendForce, etc.
+
+After editing `catalysts.json`, run `python3 scripts/update_data.py` locally and commit both files.
 
 ## Architecture decisions
 
@@ -92,6 +113,23 @@ Note: on Windows, `python` may point to Python 2. Use `python3` explicitly.
 - Never leave a session with uncommitted work that would be painful to redo.
 - Before starting any significant edit, confirm the working tree is clean (`git status`). If it's dirty from a prior interrupted session, commit or stash before proceeding.
 - The GitHub Actions workflow triggers on every push to `main`, so each commit also redeploys the live site automatically.
+
+## Dashboard sections (as of July 2026)
+
+1. **Signal banner** — DERISK/RISK-ON word + sub-text (left), SOXX price / drawdown / impl-vol stats (right)
+2. **Metric tiles** — RVol20, big-day count, drawdown, autocorrelation
+3. **Basket tracker** (`#basketGrid`) — 6 cards: SOXL, DRAM, RAM, EWY, KORU, MU with YTD%, Jun1%, ATH drawdown%
+4. **All-clear checklist** (`#checklist`) — 5 conditions: RVol20 <51%, variance premium positive, MOVE <97, P/C OI capitulation, HMM calm
+5. **Supporting gauges** (`#gaugeRows`) — 8 rows: MU RVol, MOVE, TNX, VIXEQ, dealer gamma (SOXX/EWY/DRAM), P/C OI, constituent corr, HMM stress
+6. **Catalyst timeline** (`#catalystList`) — Tier 1–4 events Jul–Sep 2026; outcome badges (bull/bear/neutral/upcoming); next-catalyst banner
+7. **Charts** — SOXX price history + vol regime chart
+8. **Footer** — DDR4 spot price + date | next catalyst countdown
+
+JS render functions in `index.html`:
+- `renderBasket(basket)` — line ~515
+- `renderChecklist(s, g)` — line ~543 (calls `renderGauges(g)` at end)
+- `renderGauges(g)` — line ~611
+- `renderCatalysts(events)` — line ~635
 
 ## Known caveats
 
