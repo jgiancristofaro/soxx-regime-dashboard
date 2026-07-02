@@ -1,7 +1,7 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-07-02T01:02:32Z",
+    "generated_at": "2026-07-02T01:42:24Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
@@ -178,26 +178,17 @@
     }
   ],
   "gauges": {
-    "soxx_dealer_gamma": -72,
-    "ewy_dealer_gamma": -64,
-    "soxx_pcoi": 2.45,
-    "soxx_pcoi_pctile": 40,
-    "ewy_pcoi": 1.75,
-    "ewy_pcoi_pctile": 63,
-    "hm_stress_prob": 1.0,
-    "constituent_corr": 0.74,
-    "constituent_corr_pctile": 87,
-    "ddr4_1gx8_spot": 35.9,
-    "ddr4_spot_date": "2026-06-26",
-    "tsmc_apr_may_ntd_b": 827.7,
-    "tsmc_rev_note": "Apr NT$408.1B + May NT$419.6B = NT$827.7B cumulative",
     "mu_rvol20": 134.3,
     "mu_price": 1032.28,
     "mu_date": "2026-07-01",
     "move": 68.5617,
     "move_date": "2026-07-01",
     "tnx": 4.475,
-    "tnx_date": "2026-07-01"
+    "tnx_date": "2026-07-01",
+    "soxx_pcoi": 2.96,
+    "constituent_corr": 0.771,
+    "constituent_n": 15,
+    "hm_stress_prob": 0.9929
   },
   "catalysts": [
     {
