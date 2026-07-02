@@ -98,6 +98,16 @@ python3 -m http.server 8000            # open http://localhost:8000
 
 Note: on Windows, `python` may point to Python 2. Use `python3` explicitly.
 
+## Work log — key decisions
+
+All significant architectural choices, data source decisions, and notable changes are documented in **`WORKLOG.md`**.
+
+Rules for WORKLOG.md:
+- Entries are **append-only** — never edit a previous entry, only add new ones at the bottom
+- Each entry is dated (`YYYY-MM-DD`) and sequentially indexed (`[001]`, `[002]`, ...)
+- Consult it before making decisions that could conflict with prior choices
+- Add a new entry whenever you: change a data source, add/remove a gauge or section, change the signal logic, or make any non-obvious architectural trade-off
+
 ## Commit hygiene — save progress frequently
 
 **Always commit after any meaningful change**, even mid-session. Sessions can crash, connections drop, and work in flight can be lost. The rule:

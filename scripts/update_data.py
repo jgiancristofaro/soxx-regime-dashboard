@@ -13,11 +13,14 @@ Additional auto-fetched (free):
   - Macro: ^MOVE (bond vol), ^TNX (10Y yield) via Yahoo
   - VIXEQ from CBOE public CSV
   - MU 20-day realized vol (confirmer for DRAM health)
+  - SOXX P/C OI from Yahoo Finance options chain (near 4 expiries)
+  - SOXX constituent 20-day avg pairwise correlation (top-15 tickers, Yahoo)
+  - HMM 2-state stress probability from SOXX daily returns (hmmlearn)
 
-Static / manually-updated (in data/catalysts.json):
-  - Catalyst calendar with outcome fields
-  - Dealer gamma, P/C OI percentile, HMM stress prob, constituent correlation
-  - DDR4 spot price, TSMC cumulative revenue
+Removed (no free API — see WORKLOG.md 2026-07-02):
+  - Dealer gamma (SqueezeMetrics/Barchart only)
+  - DDR4 spot price (TrendForce paywall)
+  - TSMC monthly revenue (manual, released once/month)
 
 Run: python scripts/update_data.py
 Env:
@@ -37,6 +40,11 @@ DATA_PATH = os.path.join(HERE, "..", "data", "regime.json")
 CATALYST_PATH = os.path.join(HERE, "..", "data", "catalysts.json")
 
 BASKET_TICKERS = ["SOXL", "DRAM", "RAM", "EWY", "KORU", "MU"]
+
+SOXX_CONSTITUENTS = [
+    "NVDA", "AVGO", "TSM", "QCOM", "AMD", "INTC", "AMAT",
+    "MU",   "LRCX", "KLAC", "ADI",  "MRVL", "TXN",  "MCHP", "NXPI",
+]
 
 # --------------------------------------------------------------------------
 # 1. PRICE LAYER — free, no API key
@@ -265,6 +273,84 @@ def fetch_mu_rvol():
         return {}
 
 
+def fetch_pcoi(ticker=TICKER):
+    """Compute P/C OI ratio via yfinance (handles Yahoo auth internally). Near 4 expiries."""
+    try:
+        import yfinance as yf
+        t = yf.Ticker(ticker)
+        exps = t.options  # tuple of expiry date strings
+        if not exps:
+            return {}
+        call_oi = put_oi = 0
+        for exp in exps[:4]:
+            try:
+                chain = t.option_chain(exp)
+                call_oi += int(chain.calls["openInterest"].fillna(0).sum())
+                put_oi += int(chain.puts["openInterest"].fillna(0).sum())
+            except Exception:
+                pass
+        if not call_oi:
+            return {}
+        return {"soxx_pcoi": round(put_oi / call_oi, 2)}
+    except Exception as e:
+        print(f"[warn] P/C OI fetch failed for {ticker}: {e}", file=sys.stderr)
+        return {}
+
+
+def fetch_constituent_corr(n_days=20):
+    """Avg pairwise 20-day correlation across top SOXX constituents (Yahoo Finance)."""
+    try:
+        series = []
+        for ticker in SOXX_CONSTITUENTS:
+            try:
+                df = fetch_prices_yahoo(ticker)
+                df["ret"] = df["close"].pct_change()
+                df = df.dropna(subset=["ret"]).tail(n_days + 5)
+                series.append(df.set_index("date")["ret"].rename(ticker))
+            except Exception:
+                pass
+        if len(series) < 5:
+            return {}
+        combined = pd.concat(series, axis=1).dropna()
+        if len(combined) < n_days:
+            return {}
+        recent = combined.tail(n_days)
+        corr = recent.corr().values
+        n = len(corr)
+        pairs = [corr[i, j] for i in range(n) for j in range(i + 1, n)]
+        avg = float(np.mean(pairs)) if pairs else None
+        return {
+            "constituent_corr": round(avg, 3) if avg is not None else None,
+            "constituent_n": len(series),
+        }
+    except Exception as e:
+        print(f"[warn] constituent corr failed: {e}", file=sys.stderr)
+        return {}
+
+
+def compute_hmm_stress(price_df):
+    """Fit 2-state Gaussian HMM on SOXX returns; return P(stress) for latest obs."""
+    try:
+        from hmmlearn import hmm as hmmlib
+    except ImportError:
+        print("[warn] hmmlearn not installed; skipping HMM", file=sys.stderr)
+        return {}
+    try:
+        rets = price_df["ret"].dropna().values
+        if len(rets) < 30:
+            return {}
+        X = rets.reshape(-1, 1)
+        model = hmmlib.GaussianHMM(n_components=2, covariance_type="full",
+                                   n_iter=500, random_state=42)
+        model.fit(X)
+        stress_state = int(np.argmax([model.covars_[i][0][0] for i in range(2)]))
+        p_stress = float(model.predict_proba(X)[-1][stress_state])
+        return {"hm_stress_prob": round(p_stress, 4)}
+    except Exception as e:
+        print(f"[warn] HMM computation failed: {e}", file=sys.stderr)
+        return {}
+
+
 def load_catalysts():
     """Load catalyst calendar and static gauges from data/catalysts.json."""
     try:
@@ -327,7 +413,7 @@ def build_series(price_df, existing_series, latest_options):
     return out
 
 
-def build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data):
+def build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data, extra_gauges=None):
     df = pd.DataFrame(series)
     df["date"] = pd.to_datetime(df["date"])
     df["mon"] = df["date"].dt.strftime("%Y-%m")
@@ -377,6 +463,7 @@ def build_payload(series, options_live, basket, macro, vixeq_data, mu_data, cata
         **static_gauges,
         **mu_data,
         **macro_data_merge(macro, vixeq_data),
+        **(extra_gauges or {}),
     }
 
     return {
@@ -416,10 +503,10 @@ def macro_data_merge(macro, vixeq_data):
 def main():
     existing = load_existing()
     try:
-        # Core SOXX price + regime metrics
-        px = fetch_soxx_prices()
-        px = compute_regime(px)
-        px = px[px["date"] >= pd.Timestamp("2026-01-01")].reset_index(drop=True)
+        # Core SOXX price + regime metrics (keep full history for HMM fit)
+        px_full = fetch_soxx_prices()
+        px_full = compute_regime(px_full)
+        px = px_full[px_full["date"] >= pd.Timestamp("2026-01-01")].reset_index(drop=True)
         options_live = fetch_options()
         series = build_series(px, existing.get("series", []), options_live)
 
@@ -430,13 +517,22 @@ def main():
         mu_data = fetch_mu_rvol()
         catalysts_data = load_catalysts()
 
-        payload = build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data)
+        # Auto-computed gauges (free, no auth)
+        pcoi_data = fetch_pcoi(TICKER)
+        corr_data = fetch_constituent_corr()
+        hmm_data = compute_hmm_stress(px_full)
+        extra_gauges = {**pcoi_data, **corr_data, **hmm_data}
+
+        payload = build_payload(series, options_live, basket, macro, vixeq_data, mu_data, catalysts_data, extra_gauges)
 
         with open(DATA_PATH, "w") as f:
             json.dump(payload, f, indent=2)
+        g = payload["gauges"]
         print(f"[ok] updated {DATA_PATH}: {len(series)} rows, "
               f"signal={payload['signal']['state']} rvol={payload['signal']['rvol20']} "
-              f"basket={len(basket)} tickers options_live={bool(options_live)}")
+              f"basket={len(basket)} pcoi={g.get('soxx_pcoi','–')} "
+              f"corr={g.get('constituent_corr','–')} hmm={g.get('hm_stress_prob','–')} "
+              f"options_live={bool(options_live)}")
     except Exception as e:
         print(f"[error] update failed, leaving existing data unchanged: {e}", file=sys.stderr)
         import traceback; traceback.print_exc(file=sys.stderr)

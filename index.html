@@ -498,13 +498,12 @@ function render(d){
   drawMain(d);
   drawSub(d);
 
-  // footer with next catalyst + DDR4 spot
+  // footer with next catalyst
   const g=d.gauges||{};
   const nextEv=(d.catalysts||[]).filter(c=>!c.outcome&&daysUntil(c.date)>=0)
     .sort((a,b)=>a.date.localeCompare(b.date))[0];
   const footerParts=[
-    `Signal = 20-day annualized realized volatility vs. 60% threshold. Price data auto-refreshes daily.`,
-    g.ddr4_1gx8_spot?`DDR4 1Gx8 spot: $${g.ddr4_1gx8_spot} (${g.ddr4_spot_date||""})`:null,
+    `Signal = 20-day annualized realized volatility vs. 60% threshold. Data auto-refreshes daily.`,
     nextEv?`Next catalyst: ${nextEv.event} ${nextEv.ticker?"("+nextEv.ticker+") ":""}— ${fmtCountdown(daysUntil(nextEv.date))}`:null,
     `Options: ${live?"live":"historical"}. Not investment advice.`,
   ].filter(Boolean);
@@ -614,9 +613,8 @@ function renderGauges(g){
     {name:"MOVE bond vol", val:g.move!=null?g.move:"–", note:"below 97 median ✓", color:g.move>110?RED:g.move>97?AMBER:GREEN},
     {name:"10Y Treasury", val:g.tnx!=null?g.tnx+"%":"–", note:"danger zone: >4.7-4.8%", color:g.tnx>4.7?RED:AMBER},
     {name:"VIXEQ−VIX spread", val:g.vixeq!=null?("~"+g.vixeq):"~30 (hist.)", note:"sector vol vs market vol", color:RED},
-    {name:"SOXX dealer gamma", val:g.soxx_dealer_gamma!=null?"$"+g.soxx_dealer_gamma+"M/1%":"–", note:"negative = vol-amplifying", color:g.soxx_dealer_gamma<0?RED:GREEN},
-    {name:"SOXX P/C OI", val:g.soxx_pcoi!=null?g.soxx_pcoi.toFixed(2):"–", note:g.soxx_pcoi_pctile!=null?g.soxx_pcoi_pctile+"th pctile — cap. at 3.0+":"–", color:g.soxx_pcoi>=3?GREEN:MUTED},
-    {name:"Constituent corr", val:g.constituent_corr!=null?g.constituent_corr.toFixed(2):"–", note:g.constituent_corr_pctile!=null?g.constituent_corr_pctile+"th pctile — diversif. broken":"–", color:g.constituent_corr>0.7?RED:AMBER},
+    {name:"SOXX P/C OI", val:g.soxx_pcoi!=null?g.soxx_pcoi.toFixed(2):"–", note:"near-month OI — capitulation signal at ≥3.0", color:g.soxx_pcoi>=3?GREEN:MUTED},
+    {name:"Constituent corr", val:g.constituent_corr!=null?g.constituent_corr.toFixed(2):"–", note:`20d avg pairwise${g.constituent_n?" ("+g.constituent_n+" tickers)":""} — diversif. broken >0.7`, color:g.constituent_corr>0.7?RED:AMBER},
     {name:"HMM P(stress)", val:g.hm_stress_prob!=null?(g.hm_stress_prob*100).toFixed(0)+"%":"–", note:"1.0 = maximum stress", color:g.hm_stress_prob>=1?RED:g.hm_stress_prob>0.5?AMBER:GREEN},
   ];
   document.getElementById("gaugeRows").innerHTML=rows.map(r=>`
