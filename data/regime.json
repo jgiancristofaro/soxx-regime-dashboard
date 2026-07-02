@@ -1,30 +1,30 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-07-02T01:42:24Z",
+    "generated_at": "2026-07-02T23:34:59Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
   },
   "signal": {
     "state": "DERISK",
-    "as_of": "2026-07-01",
-    "soxx": 599.7,
-    "rvol20": 84.8,
-    "iv": 60.8,
-    "bigday": 65.0,
-    "autocorr20": -0.28,
-    "drawdown": -8.4,
-    "variance_premium": 24.0,
+    "as_of": "2026-07-02",
+    "soxx": 566.32,
+    "rvol20": 86.9,
+    "iv": null,
+    "bigday": 70.0,
+    "autocorr20": -0.19,
+    "drawdown": -13.5,
+    "variance_premium": null,
     "first_trigger_date": "2026-06-05",
     "first_trigger_price": 539.77
   },
   "counterfactuals": {
-    "hold": 73.1,
+    "hold": 63.5,
     "rv_rule": 55.8,
-    "rv_flat_days": 17,
+    "rv_flat_days": 18,
     "iv_rule": 23.3,
-    "iv_flat_days": 57
+    "iv_flat_days": 58
   },
   "months": [
     {
@@ -84,47 +84,47 @@
     {
       "month": "2026-07",
       "rvol_min": 85.0,
-      "rvol_max": 85.0,
-      "max_dd": -8.4,
-      "bigday_end": 65.0,
-      "ret": -6.4,
+      "rvol_max": 87.0,
+      "max_dd": -13.5,
+      "bigday_end": 70.0,
+      "ret": -11.6,
       "regime": "DERISK"
     }
   ],
   "basket": [
     {
       "ticker": "SOXL",
-      "price": 217.55,
-      "as_of": "2026-07-01",
-      "ytd_ret": 360.5,
+      "price": 181.47,
+      "as_of": "2026-07-02",
+      "ytd_ret": 284.1,
       "ytd_start": 47.24,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -4.2,
+      "jun1_ret": -20.1,
       "jun1_start": 227.03,
       "jun1_start_date": "2026-06-01",
       "ath": 300.77,
       "ath_date": "2026-06-22",
-      "ath_dd": -27.7
+      "ath_dd": -39.7
     },
     {
       "ticker": "DRAM",
-      "price": 65.86,
-      "as_of": "2026-07-01",
-      "ytd_ret": 137.2,
+      "price": 60.63,
+      "as_of": "2026-07-02",
+      "ytd_ret": 118.4,
       "ytd_start": 27.76,
       "ytd_start_date": "2026-04-02",
-      "jun1_ret": -3.1,
+      "jun1_ret": -10.8,
       "jun1_start": 68.0,
       "jun1_start_date": "2026-06-01",
       "ath": 80.72,
       "ath_date": "2026-06-22",
-      "ath_dd": -18.4
+      "ath_dd": -24.9
     },
     {
       "ticker": "RAM",
-      "price": 20.24,
-      "as_of": "2026-07-01",
-      "ytd_ret": -14.9,
+      "price": 16.96,
+      "as_of": "2026-07-02",
+      "ytd_ret": -28.7,
       "ytd_start": 23.79,
       "ytd_start_date": "2026-06-24",
       "jun1_ret": null,
@@ -132,63 +132,63 @@
       "jun1_start_date": null,
       "ath": 28.71,
       "ath_date": "2026-06-25",
-      "ath_dd": -29.5
+      "ath_dd": -40.9
     },
     {
       "ticker": "EWY",
-      "price": 185.5,
-      "as_of": "2026-07-01",
-      "ytd_ret": 81.5,
+      "price": 180.14,
+      "as_of": "2026-07-02",
+      "ytd_ret": 76.2,
       "ytd_start": 102.22,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -14.4,
+      "jun1_ret": -16.9,
       "jun1_start": 216.7,
       "jun1_start_date": "2026-06-01",
       "ath": 219.2,
       "ath_date": "2026-06-18",
-      "ath_dd": -15.4
+      "ath_dd": -17.8
     },
     {
       "ticker": "KORU",
-      "price": 600.01,
-      "as_of": "2026-07-01",
-      "ytd_ret": 187.7,
+      "price": 541.43,
+      "as_of": "2026-07-02",
+      "ytd_ret": 159.6,
       "ytd_start": 208.56,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -52.6,
+      "jun1_ret": -57.2,
       "jun1_start": 1264.9,
       "jun1_start_date": "2026-06-01",
       "ath": 1264.9,
       "ath_date": "2026-06-01",
-      "ath_dd": -52.6
+      "ath_dd": -57.2
     },
     {
       "ticker": "MU",
-      "price": 1032.28,
-      "as_of": "2026-07-01",
-      "ytd_ret": 227.3,
+      "price": 975.56,
+      "as_of": "2026-07-02",
+      "ytd_ret": 209.3,
       "ytd_start": 315.42,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -0.3,
+      "jun1_ret": -5.8,
       "jun1_start": 1035.5,
       "jun1_start_date": "2026-06-01",
       "ath": 1213.5601,
       "ath_date": "2026-06-25",
-      "ath_dd": -14.9
+      "ath_dd": -19.6
     }
   ],
   "gauges": {
-    "mu_rvol20": 134.3,
-    "mu_price": 1032.28,
-    "mu_date": "2026-07-01",
-    "move": 68.5617,
-    "move_date": "2026-07-01",
-    "tnx": 4.475,
-    "tnx_date": "2026-07-01",
-    "soxx_pcoi": 2.96,
-    "constituent_corr": 0.771,
+    "mu_rvol20": 135.7,
+    "mu_price": 975.56,
+    "mu_date": "2026-07-02",
+    "move": 65.3975,
+    "move_date": "2026-07-02",
+    "tnx": 4.485,
+    "tnx_date": "2026-07-02",
+    "soxx_pcoi": 2.94,
+    "constituent_corr": 0.782,
     "constituent_n": 15,
-    "hm_stress_prob": 0.9929
+    "hm_stress_prob": 0.9895
   },
   "catalysts": [
     {
@@ -2370,6 +2370,22 @@
       "skew": 1.3473,
       "iv_pct": 94.8,
       "rv_minus_iv": 24.0188,
+      "risk_off": true,
+      "mon": "2026-07"
+    },
+    {
+      "date": "2026-07-02",
+      "soxx": 566.32,
+      "ret": -0.0557,
+      "rvol20": 86.8504,
+      "bigday": 70.0,
+      "dd": -13.5403,
+      "autocorr20": -0.1888,
+      "iv": null,
+      "pcoi": null,
+      "skew": null,
+      "iv_pct": null,
+      "rv_minus_iv": null,
       "risk_off": true,
       "mon": "2026-07"
     }
