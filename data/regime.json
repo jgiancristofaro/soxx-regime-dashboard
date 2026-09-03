@@ -1,7 +1,7 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-09-02T00:22:40Z",
+    "generated_at": "2026-09-03T00:26:43Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
@@ -199,11 +199,11 @@
     "mu_rvol20": 50.2,
     "mu_price": 933.44,
     "mu_date": "2026-09-01",
-    "move": 77.8754,
-    "move_date": "2026-09-01",
+    "move": 79.7133,
+    "move_date": "2026-09-02",
     "tnx": 4.796,
-    "tnx_date": "2026-09-01",
-    "soxx_pcoi": 1.04,
+    "tnx_date": "2026-09-02",
+    "soxx_pcoi": 1.03,
     "constituent_corr": 0.573,
     "constituent_n": 15,
     "hm_stress_prob": 0.0136
