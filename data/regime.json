@@ -1,29 +1,29 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-09-30T01:23:30Z",
+    "generated_at": "2026-10-01T01:23:13Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
   },
   "signal": {
     "state": "RISK-ON",
-    "as_of": "2026-09-28",
-    "soxx": 560.79,
-    "rvol20": 38.9,
+    "as_of": "2026-09-29",
+    "soxx": 567.44,
+    "rvol20": 39.0,
     "iv": null,
     "bigday": 20.0,
-    "autocorr20": 0.11,
-    "drawdown": -14.4,
+    "autocorr20": 0.09,
+    "drawdown": -13.4,
     "variance_premium": null,
     "first_trigger_date": "2026-06-05",
     "first_trigger_price": 539.77
   },
   "counterfactuals": {
-    "hold": 61.9,
-    "rv_rule": 70.7,
+    "hold": 63.8,
+    "rv_rule": 72.8,
     "rv_flat_days": 41,
-    "iv_rule": 22.1,
+    "iv_rule": 23.5,
     "iv_flat_days": 58
   },
   "months": [
@@ -105,24 +105,24 @@
       "rvol_max": 41.0,
       "max_dd": -24.1,
       "bigday_end": 20.0,
-      "ret": 9.7,
+      "ret": 11.0,
       "regime": "RISK-ON"
     }
   ],
   "basket": [
     {
       "ticker": "SOXL",
-      "price": 142.29,
-      "as_of": "2026-09-28",
-      "ytd_ret": 201.2,
+      "price": 147.0,
+      "as_of": "2026-09-29",
+      "ytd_ret": 211.2,
       "ytd_start": 47.24,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -37.3,
+      "jun1_ret": -35.3,
       "jun1_start": 227.03,
       "jun1_start_date": "2026-06-01",
       "ath": 300.77,
       "ath_date": "2026-06-22",
-      "ath_dd": -52.7
+      "ath_dd": -51.1
     },
     {
       "ticker": "DRAM",
@@ -199,14 +199,14 @@
     "mu_rvol20": 51.1,
     "mu_price": 1065.08,
     "mu_date": "2026-09-29",
-    "move": 106.6027,
-    "move_date": "2026-09-29",
-    "tnx": 5.255,
-    "tnx_date": "2026-09-29",
-    "soxx_pcoi": 1.95,
+    "move": 110.4545,
+    "move_date": "2026-09-30",
+    "tnx": 5.293,
+    "tnx_date": "2026-09-30",
+    "soxx_pcoi": 1.87,
     "constituent_corr": 0.55,
     "constituent_n": 15,
-    "hm_stress_prob": 0.0117
+    "hm_stress_prob": 0.009
   },
   "catalysts": [
     {
@@ -3359,6 +3359,22 @@
       "bigday": 20.0,
       "dd": -14.3845,
       "autocorr20": 0.1054,
+      "iv": null,
+      "pcoi": null,
+      "skew": null,
+      "iv_pct": null,
+      "rv_minus_iv": null,
+      "risk_off": false,
+      "mon": "2026-09"
+    },
+    {
+      "date": "2026-09-29",
+      "soxx": 567.44,
+      "ret": 0.0119,
+      "rvol20": 38.9639,
+      "bigday": 20.0,
+      "dd": -13.3693,
+      "autocorr20": 0.0887,
       "iv": null,
       "pcoi": null,
       "skew": null,
