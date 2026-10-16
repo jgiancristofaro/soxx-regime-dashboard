@@ -1,7 +1,7 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-10-15T00:40:35Z",
+    "generated_at": "2026-10-16T00:31:51Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
@@ -135,23 +135,23 @@
     },
     {
       "ticker": "DRAM",
-      "price": 52.84,
-      "as_of": "2026-10-13",
-      "ytd_ret": 90.3,
+      "price": 50.14,
+      "as_of": "2026-10-14",
+      "ytd_ret": 80.6,
       "ytd_start": 27.76,
       "ytd_start_date": "2026-04-02",
-      "jun1_ret": -22.3,
+      "jun1_ret": -26.3,
       "jun1_start": 68.0,
       "jun1_start_date": "2026-06-01",
       "ath": 80.72,
       "ath_date": "2026-06-22",
-      "ath_dd": -34.5
+      "ath_dd": -37.9
     },
     {
       "ticker": "RAM",
-      "price": 10.37,
-      "as_of": "2026-10-13",
-      "ytd_ret": -56.4,
+      "price": 9.3,
+      "as_of": "2026-10-14",
+      "ytd_ret": -60.9,
       "ytd_start": 23.79,
       "ytd_start_date": "2026-06-24",
       "jun1_ret": null,
@@ -159,7 +159,7 @@
       "jun1_start_date": null,
       "ath": 28.71,
       "ath_date": "2026-06-25",
-      "ath_dd": -63.9
+      "ath_dd": -67.6
     },
     {
       "ticker": "EWY",
@@ -177,17 +177,17 @@
     },
     {
       "ticker": "KORU",
-      "price": 14.72,
-      "as_of": "2026-10-13",
-      "ytd_ret": 41.2,
+      "price": 12.93,
+      "as_of": "2026-10-14",
+      "ytd_ret": 24.0,
       "ytd_start": 10.428,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -76.7,
+      "jun1_ret": -79.6,
       "jun1_start": 63.245,
       "jun1_start_date": "2026-06-01",
       "ath": 63.245,
       "ath_date": "2026-06-01",
-      "ath_dd": -76.7
+      "ath_dd": -79.6
     },
     {
       "ticker": "MU",
@@ -208,14 +208,14 @@
     "mu_rvol20": 50.7,
     "mu_price": 914.13,
     "mu_date": "2026-10-14",
-    "move": 99.0643,
-    "move_date": "2026-10-14",
-    "tnx": 5.19,
-    "tnx_date": "2026-10-14",
-    "soxx_pcoi": 2.77,
+    "move": 102.4871,
+    "move_date": "2026-10-15",
+    "tnx": 5.089,
+    "tnx_date": "2026-10-15",
+    "soxx_pcoi": 2.93,
     "constituent_corr": 0.522,
     "constituent_n": 15,
-    "hm_stress_prob": 0.0517
+    "hm_stress_prob": 0.0505
   },
   "catalysts": [
     {
