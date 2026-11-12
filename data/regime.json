@@ -1,29 +1,29 @@
 {
   "meta": {
     "ticker": "SOXX",
-    "generated_at": "2026-11-11T02:02:09Z",
+    "generated_at": "2026-11-12T03:12:06Z",
     "threshold": 60.0,
     "data_source": "price feed (Yahoo/Stooq) (options: historical)",
     "options_live": false
   },
   "signal": {
     "state": "DERISK",
-    "as_of": "2026-11-10",
-    "soxx": 146.59,
-    "rvol20": 74.5,
+    "as_of": "2026-11-11",
+    "soxx": 155.4,
+    "rvol20": 77.2,
     "iv": null,
     "bigday": 50.0,
-    "autocorr20": 0.08,
-    "drawdown": -32.9,
+    "autocorr20": 0.09,
+    "drawdown": -28.8,
     "variance_premium": null,
     "first_trigger_date": "2026-06-05",
     "first_trigger_price": 179.92
   },
   "counterfactuals": {
-    "hold": 26.9,
+    "hold": 34.6,
     "rv_rule": 20.5,
-    "rv_flat_days": 44,
-    "iv_rule": -4.3,
+    "rv_flat_days": 45,
+    "iv_rule": 1.5,
     "iv_flat_days": 58
   },
   "months": [
@@ -120,47 +120,47 @@
     {
       "month": "2026-11",
       "rvol_min": 51.0,
-      "rvol_max": 75.0,
+      "rvol_max": 77.0,
       "max_dd": -39.6,
       "bigday_end": 50.0,
-      "ret": -6.7,
+      "ret": -1.1,
       "regime": "DERISK"
     }
   ],
   "basket": [
     {
       "ticker": "SOXL",
-      "price": 56.06,
-      "as_of": "2026-11-10",
-      "ytd_ret": 18.7,
+      "price": 66.03,
+      "as_of": "2026-11-11",
+      "ytd_ret": 39.8,
       "ytd_start": 47.24,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -75.3,
+      "jun1_ret": -70.9,
       "jun1_start": 227.03,
       "jun1_start_date": "2026-06-01",
       "ath": 300.77,
       "ath_date": "2026-06-22",
-      "ath_dd": -81.4
+      "ath_dd": -78.0
     },
     {
       "ticker": "DRAM",
-      "price": 41.78,
-      "as_of": "2026-11-09",
-      "ytd_ret": 50.5,
+      "price": 44.85,
+      "as_of": "2026-11-11",
+      "ytd_ret": 61.6,
       "ytd_start": 27.76,
       "ytd_start_date": "2026-04-02",
-      "jun1_ret": -38.6,
+      "jun1_ret": -34.0,
       "jun1_start": 68.0,
       "jun1_start_date": "2026-06-01",
       "ath": 80.72,
       "ath_date": "2026-06-22",
-      "ath_dd": -48.2
+      "ath_dd": -44.4
     },
     {
       "ticker": "RAM",
-      "price": 5.82,
-      "as_of": "2026-11-09",
-      "ytd_ret": -75.5,
+      "price": 6.63,
+      "as_of": "2026-11-11",
+      "ytd_ret": -72.1,
       "ytd_start": 23.79,
       "ytd_start_date": "2026-06-24",
       "jun1_ret": null,
@@ -168,63 +168,63 @@
       "jun1_start_date": null,
       "ath": 28.71,
       "ath_date": "2026-06-25",
-      "ath_dd": -79.7
+      "ath_dd": -76.9
     },
     {
       "ticker": "EWY",
-      "price": 139.18,
-      "as_of": "2026-11-10",
-      "ytd_ret": 36.2,
+      "price": 147.81,
+      "as_of": "2026-11-11",
+      "ytd_ret": 44.6,
       "ytd_start": 102.22,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -35.8,
+      "jun1_ret": -31.8,
       "jun1_start": 216.7,
       "jun1_start_date": "2026-06-01",
       "ath": 219.2,
       "ath_date": "2026-06-18",
-      "ath_dd": -36.5
+      "ath_dd": -32.6
     },
     {
       "ticker": "KORU",
-      "price": 7.69,
-      "as_of": "2026-11-09",
-      "ytd_ret": -26.3,
+      "price": 8.54,
+      "as_of": "2026-11-11",
+      "ytd_ret": -18.1,
       "ytd_start": 10.428,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -87.8,
+      "jun1_ret": -86.5,
       "jun1_start": 63.245,
       "jun1_start_date": "2026-06-01",
       "ath": 63.245,
       "ath_date": "2026-06-01",
-      "ath_dd": -87.8
+      "ath_dd": -86.5
     },
     {
       "ticker": "MU",
-      "price": 725.11,
-      "as_of": "2026-11-10",
-      "ytd_ret": 129.9,
+      "price": 811.3,
+      "as_of": "2026-11-11",
+      "ytd_ret": 157.2,
       "ytd_start": 315.42,
       "ytd_start_date": "2026-01-02",
-      "jun1_ret": -30.0,
+      "jun1_ret": -21.7,
       "jun1_start": 1035.5,
       "jun1_start_date": "2026-06-01",
       "ath": 1213.5601,
       "ath_date": "2026-06-25",
-      "ath_dd": -40.2
+      "ath_dd": -33.1
     }
   ],
   "gauges": {
-    "mu_rvol20": 92.6,
-    "mu_price": 725.11,
-    "mu_date": "2026-11-10",
-    "move": 92.4315,
+    "mu_rvol20": 102.8,
+    "mu_price": 811.3,
+    "mu_date": "2026-11-11",
+    "move": 92.43,
     "move_date": "2026-11-10",
-    "tnx": 4.983,
-    "tnx_date": "2026-11-10",
-    "soxx_pcoi": 1.58,
-    "constituent_corr": 0.744,
+    "tnx": 4.998,
+    "tnx_date": "2026-11-11",
+    "soxx_pcoi": 1.53,
+    "constituent_corr": 0.748,
     "constituent_n": 15,
-    "hm_stress_prob": 0.8872
+    "hm_stress_prob": 0.9752
   },
   "catalysts": [
     {
@@ -3873,6 +3873,22 @@
       "bigday": 50.0,
       "dd": -32.8606,
       "autocorr20": 0.0787,
+      "iv": null,
+      "pcoi": null,
+      "skew": null,
+      "iv_pct": null,
+      "rv_minus_iv": null,
+      "risk_off": true,
+      "mon": "2026-11"
+    },
+    {
+      "date": "2026-11-11",
+      "soxx": 155.4,
+      "ret": 0.0601,
+      "rvol20": 77.1784,
+      "bigday": 50.0,
+      "dd": -28.8255,
+      "autocorr20": 0.085,
       "iv": null,
       "pcoi": null,
       "skew": null,
